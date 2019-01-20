@@ -1,33 +1,41 @@
-from typing import List, Dict
-from flask import Flask
+from flask import *
+from json import *
+from flask_cors import CORS, cross_origin
+from flask import request
 import mysql.connector
-import json
+from sqlwrapper import mysqlwrapper
 
 app = Flask(__name__)
+CORS(app)
+db = mysqlwrapper()
+db.connect("db", "root", "root", "knights")
+EXPENSES_TABLE = 'tom'
+
+@app.route('/monthlyExpenses')
+def get_monthly_expenses():
+    #db.is_table_exist('dogs', ['id','breed','color','weight'],[1,'Labrador','yellow',29.4])
+
+    fetched_data = db.fetch_all(EXPENSES_TABLE)
+    print (fetched_data)
+    mountly_expenses = 0
+    for data in fetched_data:
+        mountly_expenses += data['amount']
+
+    jsonResp = {'monthlyExpenses': mountly_expenses}
+    return jsonify(jsonResp)
 
 
-def favorite_colors() -> List[Dict]:
-    config = {
-        'user': 'root',
-        'password': 'root',
-        'host': 'db',
-        'port': '3306',
-        'database': 'knights'
-    }
-    connection = mysql.connector.connect(**config)
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM favorite_colors')
-    results = [{name: color} for (name, color) in cursor]
-    cursor.close()
-    connection.close()
+@app.route('/pay')
+def pay():
+    amount = request.args.get('amount', default=0, type=int)
+    spent_type = request.args.get('spent_type', default=0, type=int)
+    if amount == 0 or spent_type == 0:
+        return ''
 
-    return results
+    db.create_transactional_table(EXPENSES_TABLE, ['spent_type','amount',],['integer','integer'])
+    db.insert(EXPENSES_TABLE, ['spent_type','amount'],[spent_type, amount] )  
 
-
-@app.route('/')
-def index() -> str:
-    return json.dumps({'favorite_colors': favorite_colors()})
-
+    return ''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
