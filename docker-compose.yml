@@ -1,10 +1,10 @@
 version: '3.5'
 services:
   client:
-    build: ./client
+    build: ./client_t
     volumes:
-      - './client:/usr/src/app'
-      - './client/usr/src/app/node_modules'
+      - './client_t:/usr/src/app'
+      - './client_t/usr/src/app/node_modules'
     ports:
       - '3000:3000'
     environment:
