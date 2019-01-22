@@ -9,8 +9,8 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=development
-  app:
-    build: ./app
+  server:
+    build: ./server
     links:
       - db
     ports:
