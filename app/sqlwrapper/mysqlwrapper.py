@@ -40,9 +40,8 @@ class mysqlwrapper():
     ######################################## configuration code  ###############################
     ############################################################################################
 
-    def connect(self, host, user, password, dbname):
+    def connect(self, host, user, password):
         # self.__metadata["dbname"] = dbname
-        self.__databasename = dbname
         # self.__metadata["user"] = user
         self.__user = user
         self.__password = password
@@ -51,8 +50,7 @@ class mysqlwrapper():
         # self.__metadata["port"] = port
         # self.__port=port
         try:
-            self.__conn = MySQLdb.connect(self.__host, self.__user, self.__password,
-                                          self.__databasename)
+            self.__conn = MySQLdb.connect(self.__host, self.__user, self.__password)
             self.__cur = self.__conn.cursor()
         except Exception as e:
             raise e
@@ -414,6 +412,24 @@ class mysqlwrapper():
         query = 'UNLOCK TABLES'
         try:
             self.__cur.execute(query)
+        except Exception as e:
+            self.__conn.rollback()
+            raise e
+   
+    @__configuration_required
+    def create_db(self, database):
+        create_query = 'CREATE DATABASE ' + database
+        try:
+            self.__cur.execute(create_query)
+        except Exception as e:
+            self.__conn.rollback()
+            raise e
+
+    @__configuration_required
+    def connect_db(self, database):
+        connect_query = 'USE ' + database
+        try:
+            self.__cur.execute(connect_query)
         except Exception as e:
             self.__conn.rollback()
             raise e

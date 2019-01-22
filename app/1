@@ -8,13 +8,7 @@ from sqlwrapper import mysqlwrapper
 app = Flask(__name__)
 CORS(app)
 db = mysqlwrapper()
-db.connect("db", "root", "root")
-try:
-    db.create_db('test1')
-except Exception as e:
-    print 'db already initalized'
-
-db.connect_db('test1')
+db.connect("db", "root", "root", "test1")
 EXPENSES_TABLE = 'tom'
 
 @app.route('/monthlyExpenses')
