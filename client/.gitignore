@@ -21,9 +21,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-logo.svg
-/src/serviceWorker.js
-/src/index.js
-/src/index.css
-/src/App.test.js
-/public
