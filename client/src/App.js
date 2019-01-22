@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const SERVE_HOST = '18.224.252.180'
+const SERVER_HOST = '0.0.0.0'
+// const SERVER_HOST = '18.224.252.180'
+
 const SERVER_PORT = '5000'
-const SERVER_URL =  'http://' + SERVE_HOST + ':' + SERVER_PORT +'/'
+const SERVER_URL =  'http://' + SERVER_HOST + ':' + SERVER_PORT +'/'
 
 export default class App extends Component {
   constructor() {
