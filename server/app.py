@@ -4,6 +4,8 @@ from flask_cors import CORS, cross_origin
 from flask import request
 import mysql.connector
 from sqlwrapper import mysqlwrapper
+
+
 DATABASE = 'test123'
 app = Flask(__name__)
 CORS(app)
