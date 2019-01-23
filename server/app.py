@@ -4,17 +4,17 @@ from flask_cors import CORS, cross_origin
 from flask import request
 import mysql.connector
 from sqlwrapper import mysqlwrapper
-
+DATABASE = 'test123'
 app = Flask(__name__)
 CORS(app)
 db = mysqlwrapper()
 db.connect("db", "root", "root")
 try:
-    db.create_db('test1')
+    db.create_db(DATABASE)
 except Exception as e:
     print 'db already initalized'
 
-db.connect_db('test1')
+db.connect_db(DATABASE)
 EXPENSES_TABLE = 'tom'
 
 @app.route('/monthlyExpenses')
@@ -42,6 +42,12 @@ def pay():
     db.insert(EXPENSES_TABLE, ['spent_type','amount'],[spent_type, amount] )  
 
     return ''
+
+@app.route('/lestTenExpenses')
+def getLestTenExpenses():
+    fetched_data = db.fetch_last_ten(EXPENSES_TABLE)
+    jsonResp = {'lestTenExpenses': fetched_data}
+    return jsonify(jsonResp)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

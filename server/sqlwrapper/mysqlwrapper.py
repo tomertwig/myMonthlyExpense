@@ -104,14 +104,14 @@ class mysqlwrapper():
         return None
 
     @__configuration_required
-    def fetch_last(self, tablename):
+    def fetch_last_ten(self, tablename):
         """fetches the last data from the table
 		function definition:
 		fetch_last(tablename)
 		example: db.fetch_last('users')
 		return_type: single dictionary (i.e row)
 		"""
-        query = 'select * from ' + tablename
+        query = 'select * from ' + tablename + ' ORDER BY ts DESC LIMIT 10 '
         try:
             self.__cur.execute(query)
         except Exception as e:
@@ -119,10 +119,7 @@ class mysqlwrapper():
             raise e
         fetcheddata = self.__cur.fetchall()
         if fetcheddata:
-            fetcheddata = fetcheddata[-1]
-            columns = self.__helper._functions__desc_to_columns(self.__cur.description)
-            fetcheddata = self.__helper._functions__pgtodict([fetcheddata], columns)
-            return fetcheddata[-1]
+            return fetcheddata
         return None
 
     @__configuration_required
