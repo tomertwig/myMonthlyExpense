@@ -47,6 +47,7 @@ export default class App extends Component {
 
   getLestTenExpenses(){
     console.log('getLestTenExpenses')
+    return;
     return fetch(SERVER_URL + 'lestTenExpenses', {
       method: 'GET',
       dataType: 'json',

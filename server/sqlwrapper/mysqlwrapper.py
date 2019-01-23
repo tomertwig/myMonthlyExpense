@@ -40,7 +40,7 @@ class mysqlwrapper():
     ######################################## configuration code  ###############################
     ############################################################################################
 
-    def connect(self, host, user, password):
+def connect(self, host, user, password):
         # self.__metadata["dbname"] = dbname
         # self.__metadata["user"] = user
         self.__user = user
