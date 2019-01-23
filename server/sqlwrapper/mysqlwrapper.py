@@ -40,20 +40,20 @@ class mysqlwrapper():
     ######################################## configuration code  ###############################
     ############################################################################################
 
-def connect(self, host, user, password):
-        # self.__metadata["dbname"] = dbname
-        # self.__metadata["user"] = user
-        self.__user = user
-        self.__password = password
-        # self.__metadata["host"] = host
-        self.__host = host
-        # self.__metadata["port"] = port
-        # self.__port=port
-        try:
-            self.__conn = MySQLdb.connect(self.__host, self.__user, self.__password)
-            self.__cur = self.__conn.cursor()
-        except Exception as e:
-            raise e
+    def connect(self, host, user, password):
+            # self.__metadata["dbname"] = dbname
+            # self.__metadata["user"] = user
+            self.__user = user
+            self.__password = password
+            # self.__metadata["host"] = host
+            self.__host = host
+            # self.__metadata["port"] = port
+            # self.__port=port
+            try:
+                self.__conn = MySQLdb.connect(self.__host, self.__user, self.__password)
+                self.__cur = self.__conn.cursor()
+            except Exception as e:
+                raise e
 
     ############################################################################################
     ################################# functional code ##########################################
