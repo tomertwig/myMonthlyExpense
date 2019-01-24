@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const SERVER_HOST = '0.0.0.0'
+// const SERVER_HOST = '10.100.102.4'
 // const SERVER_HOST = '18.224.252.180'
 
 const SERVER_PORT = '5000'

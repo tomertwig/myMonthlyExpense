@@ -55,7 +55,7 @@ def getLestTenExpenses():
     data = []
     for d in fetched_data:
         ts = d[0]
-        data.append([ts.strftime("%Y-%m-%d %H:%M"), d[1], d[2]])
+        data.append([ts.strftime("%Y-%m-%d"), d[1], d[2]])
     jsonResp = {'lestTenExpenses': data}
     
     
