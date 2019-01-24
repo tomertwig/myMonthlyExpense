@@ -47,10 +47,18 @@ def pay():
 
     return ''
 
+
 @app.route('/lestTenExpenses')
 def getLestTenExpenses():
     fetched_data = db.fetch_last_ten(EXPENSES_TABLE)
-    jsonResp = {'lestTenExpenses': fetched_data}
+    
+    data = []
+    for d in fetched_data:
+        ts = d[0]
+        data.append([ts.strftime("%Y-%m-%d %H:%M"), d[1], d[2]])
+    jsonResp = {'lestTenExpenses': data}
+    
+    
     return jsonify(jsonResp)
 
 if __name__ == '__main__':

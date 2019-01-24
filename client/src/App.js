@@ -98,6 +98,7 @@ export default class App extends Component {
        }
     }
 
+
   renderLastTenExpenses(){
     const lastTenExpenses = this.state.lastTenExpenses
     console.log('lastTenExpenses')
@@ -108,12 +109,22 @@ export default class App extends Component {
     //let tomer = this.getTypeName(1)
 
     return (
-      <div>
+      <table>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Expense</th>
+          </tr>
       {
         lastTenExpenses.map((expense, idx) => {
-         return (<li key={idx}>{ this.getTypeName.call(this, expense[1]) + ' ' + expense[2] }</li>)
-       })}
-      </div>
+         return (<tr key={idx}>
+                  <td>{expense[0]}</td>
+                  <td>{this.getTypeName.call(this, expense[1])}</td>
+                  <td>{expense[2]} </td>
+                  </tr>)
+        })
+      }
+       </table>
     );
   
   }
