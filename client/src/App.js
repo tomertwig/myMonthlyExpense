@@ -12,54 +12,111 @@ export default class App extends Component {
     super()
 
     this.state = {
-      pyResp: []
+      pyResp: [],
+      lastTenExpenses:[]
     }
-    this.getMonthlyExpenses()
+//    this.getMonthlyExpenses().then(response => console.log(response));
   }
 
   handlePay = () => {
+    console.log('Tomer');
+
     fetch(SERVER_URL + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
-    }).then(() => this.setState({amount:'', spentType:'0', monthlyExpenses : this.getMonthlyExpenses()}))
+    }).then(() => {
+      this.fetchMonthlyExpensesAndLestTenExpenses()
+      })
+  }
+
+  fetchMonthlyExpensesAndLestTenExpenses = () => {
+    let monthlyExpenses = this.getMonthlyExpenses();
+    monthlyExpenses.then(monthlyExpensesValue => {
+      let lestTenExpenses = this.getLestTenExpenses();
+      lestTenExpenses.then(lestTenExpensesValue => {
+          console.log(lestTenExpensesValue)
+          this.setState({spentType: 0, amount:'', monthlyExpenses:monthlyExpensesValue, lastTenExpenses: lestTenExpensesValue})
+      })
+    })
   }
 
   componentDidMount(){
-    this.getMonthlyExpenses()
+   // this.getMonthlyExpenses().then(response => console.log(response));
+
+  //  const monthlyExpenses = this.getMonthlyExpenses()
+//    const lestTenExpenses = this.getLestTenExpenses()
+    //console.log(monthlyExpenses)
+    //console.log(lestTenExpenses)
+
+    //this.setState({monthlyExpenses, lestTenExpenses})
   }
 
   getMonthlyExpenses(){
     console.log('getMonthlyExpenses')
-    fetch(SERVER_URL + 'monthlyExpenses', {
+    return fetch(SERVER_URL + 'monthlyExpenses', {
       method: 'GET',
       dataType: 'json',
     })
       .then(r => r.json())
       .then(r => {
-        console.log(r)
-        this.setState({
-          monthlyExpenses: r.monthlyExpenses,
-          tomer: true
-        })
+        //console.log(r)
+        return r.monthlyExpenses
       })
       .catch(err => console.log(err))
   }
 
   getLestTenExpenses(){
     console.log('getLestTenExpenses')
-    return;
     return fetch(SERVER_URL + 'lestTenExpenses', {
       method: 'GET',
       dataType: 'json',
     })
       .then(r => r.json())
       .then(r => {
-          console.log(r.lestTenExpenses)
-  
+        //console.log(r)
+        return r.lestTenExpenses
       })
       .catch(err => console.log(err))
-  }
+    }
+    
+    getTypeName(t) {
+      switch(t) {
+        case 1:
+          return 'Bar'
+        case 2:
+          return 'Resturant'
+        case 3:
+          return 'Supermarket'
+        case 4:
+          return 'Tamara'
+        case 5:
+          return 'Fashion'
+        case 6:
+          return 'Other'
+        default:
+          return 'Other'
+       }
+    }
 
+  renderLastTenExpenses(){
+    const lastTenExpenses = this.state.lastTenExpenses
+    console.log('lastTenExpenses')
+    console.log(lastTenExpenses)
+
+    if (lastTenExpenses === [])
+      return;
+    //let tomer = this.getTypeName(1)
+
+    return (
+      <div>
+      {
+        lastTenExpenses.map((expense, idx) => {
+         return (<li key={idx}>{ this.getTypeName.call(this, expense[1]) + ' ' + expense[2] }</li>)
+       })}
+      </div>
+    );
+  
+  }
   
   handleSpentTypeChanged = (e) => {
     console.log(e.target.value);
@@ -75,6 +132,7 @@ export default class App extends Component {
 
 
   render() {
+    console.log('render')
     return (
       <div className="App">
       <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
@@ -91,8 +149,7 @@ export default class App extends Component {
       <div/>
       <button onClick={() => this.handlePay()}>Pay</button>
       <div> Total monthly expenses: {this.state.monthlyExpenses}</div>
-      <div> Last expenses: {this.getLestTenExpenses()}</div>
-
+      {this.renderLastTenExpenses()} 
       </div>
     );
   }
