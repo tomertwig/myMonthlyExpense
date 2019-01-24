@@ -22,6 +22,7 @@ EXPENSES_TABLE = 'tom'
 @app.route('/monthlyExpenses')
 def get_monthly_expenses():
     #db.is_table_exist('dogs', ['id','breed','color','weight'],[1,'Labrador','yellow',29.4])
+    print 'get_monthly_expenses !!!! '
 
     fetched_data = db.fetch_all(EXPENSES_TABLE)
     print (fetched_data)
@@ -35,6 +36,7 @@ def get_monthly_expenses():
 
 @app.route('/pay')
 def pay():
+    print 'pay !!!! '
     amount = request.args.get('amount', default=0, type=int)
     spent_type = request.args.get('spent_type', default=0, type=int)
     if amount == 0 or spent_type == 0:
