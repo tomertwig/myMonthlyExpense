@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 
-// const SERVER_HOST = '10.100.102.4'
-// const SERVER_HOST = '18.224.252.180'
-
-const SERVER_PORT = '5000'
-const SERVER_URL =  'http://' + SERVER_HOST + ':' + SERVER_PORT +'/'
 
 export default class App extends Component {
   constructor() {
@@ -15,13 +10,22 @@ export default class App extends Component {
       pyResp: [],
       lastTenExpenses:[]
     }
-//    this.getMonthlyExpenses().then(response => console.log(response));
+    fetch('https://api.ipify.org?format=json')
+    .then(function(response) {
+      return response.json();
+    })
+    .then((json) => {
+      const serverHost = (json.ip === '93.173.170.102' ? '10.100.102.4' : '18.224.252.180')
+      const serverPort = '5000'
+      const serverUrl =  'http://' + serverHost + ':' + serverPort +'/'
+      this.state.serverUrl = serverUrl
+      this.fetchMonthlyExpensesAndLestTenExpenses()
+    }); 
+
   }
 
   handlePay = () => {
-    console.log('Tomer');
-
-    fetch(SERVER_URL + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
+    fetch(this.state.serverUrl + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
     }).then(() => {
@@ -51,9 +55,10 @@ export default class App extends Component {
     //this.setState({monthlyExpenses, lestTenExpenses})
   }
 
-  getMonthlyExpenses(){
+  getMonthlyExpenses = () => {
     console.log('getMonthlyExpenses')
-    return fetch(SERVER_URL + 'monthlyExpenses', {
+    console.log(this.state.serverUrl)
+    return fetch(this.state.serverUrl  + 'monthlyExpenses', {
       method: 'GET',
       dataType: 'json',
     })
@@ -67,7 +72,7 @@ export default class App extends Component {
 
   getLestTenExpenses(){
     console.log('getLestTenExpenses')
-    return fetch(SERVER_URL + 'lestTenExpenses', {
+    return fetch(this.state.serverUrl  + 'lestTenExpenses', {
       method: 'GET',
       dataType: 'json',
     })
@@ -81,6 +86,8 @@ export default class App extends Component {
     
     getTypeName(t) {
       switch(t) {
+        case 0: 
+          return 'Chose Type'
         case 1:
           return 'Bar'
         case 2:
@@ -103,10 +110,6 @@ export default class App extends Component {
     const lastTenExpenses = this.state.lastTenExpenses
     console.log('lastTenExpenses')
     console.log(lastTenExpenses)
-
-    if (lastTenExpenses === [])
-      return;
-    //let tomer = this.getTypeName(1)
 
     return (
       <table>
@@ -147,13 +150,13 @@ export default class App extends Component {
     return (
       <div className="App">
       <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
-        <option value="0">Chose Type</option>
-        <option value="1">Bar</option>
-        <option value="2">Resturant</option>
-        <option value="3">Supermarket</option>
-        <option value="4">Tamara</option>
-        <option value="5">Fashion</option>
-        <option value="6">Other</option>
+        <option value="0">{this.getTypeName(0)}</option>
+        <option value="1">{this.getTypeName(1)}</option>
+        <option value="2">{this.getTypeName(2)}</option>
+        <option value="3">{this.getTypeName(3)}</option>
+        <option value="4">{this.getTypeName(4)}</option>
+        <option value="5">{this.getTypeName(5)}</option>
+        <option value="6">{this.getTypeName(6)}</option>
       </select>
       <div/>
       <input type="text" value={this.state.amount} onChange={this.handleAmountChanged} />
