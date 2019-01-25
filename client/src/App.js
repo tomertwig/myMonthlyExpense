@@ -17,7 +17,7 @@ export default class App extends Component {
       displayAll: false,
       expenses:[]
     }
-    this.fetchMonthlyExpensesAndExpenses()
+    this.fetchExpenses()
 
   }
 
@@ -34,18 +34,18 @@ export default class App extends Component {
         alert("Invalid Input");
         return;
       }
-      this.fetchMonthlyExpensesAndExpenses()
+      this.fetchExpenses()
       })
   }
 
   handleDisplayAll(){
     console.log('handleDisplayAll')
-    this.fetchMonthlyExpensesAndExpenses(true)
+    this.fetchExpenses(true)
   }
 
   handleShowLess(){
     console.log('handleShowLess')
-    this.fetchMonthlyExpensesAndExpenses(false)
+    this.fetchExpenses(false)
   }
 
   
@@ -55,23 +55,20 @@ export default class App extends Component {
         method: 'GET',
         dataType: 'json'
       }).then(() => {
-        this.fetchMonthlyExpensesAndExpenses()
+        this.fetchExpenses()
         })
     }
 
   }
   
-  fetchMonthlyExpensesAndExpenses = (displayAll) => {
-    let monthlyExpenses = this.getMonthlyExpenses();
-    monthlyExpenses.then(monthlyExpensesValue => {
-      let expenses = this.getExpenses(displayAll);
-      expenses.then(expensesValue => {
-          console.log(monthlyExpensesValue)
-          console.log('expensesValueNew')
-          console.log(expensesValue)
+  fetchExpenses = (displayAll) => {
+    let expenses = this.getExpenses(displayAll);
+    expenses.then(result => {
+        console.log('fetchExpenses')
+        console.log(result)
+        console.log('fetchExpenses_end')
 
-          this.setState({spentType: 0, amount:'', monthlyExpenses:monthlyExpensesValue, expenses: expensesValue, displayAll})
-      })
+        this.setState({spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll})
     })
   }
 
@@ -105,7 +102,7 @@ export default class App extends Component {
       .then(r => r.json())
       .then(r => {
         //console.log(r)
-        return r.expenses
+        return r
       })
       .catch(err => console.log(err))
     }

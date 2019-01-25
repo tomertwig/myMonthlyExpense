@@ -19,19 +19,6 @@ except Exception as e:
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'tom'
 
-@app.route('/monthlyExpenses')
-def get_monthly_expenses():
-    #db.is_table_exist('dogs', ['id','breed','color','weight'],[1,'Labrador','yellow',29.4])
-    print 'get_monthly_expenses !!!! '
-
-    fetched_data = db.fetch_all(EXPENSES_TABLE)
-    mountly_expenses = 0
-    for data in fetched_data:
-        mountly_expenses += data['amount']
-
-    jsonResp = {'monthlyExpenses': mountly_expenses}
-    return jsonify(jsonResp)
-
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
     print ('deleteLatestTransaction !!!! ')
@@ -62,16 +49,23 @@ def getLestExpenses():
     print ('request.args.get(all, default=False, type=bool)')
 
     all = request.args.get('all', default=0, type=int) == 1
-    number_of_rows = 10 if not all else None
 
     jsonResp = None
     data = []
-    fetched_data = db.fetch_last_rows(EXPENSES_TABLE, number_of_rows)
-    for d in fetched_data:
-        data.append([d[0].strftime("%Y-%m-%d"), d[1], d[2]])
-    
-    jsonResp = {'expenses': data}
+    fetched_data = db.fetch_last_rows(EXPENSES_TABLE)
+    number_of_rows = len(fetched_data) if all else min (10, len(fetched_data))
 
+    i = 0
+    mountly_expenses = 0
+    for d in fetched_data[:number_of_rows]:
+        data.append([d[0].strftime("%Y-%m-%d"), d[1], d[2]])
+        mountly_expenses += int(d[2])
+        i += 1
+
+    for d in fetched_data[i:]:
+        mountly_expenses += int(d[2])
+
+    jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
     return jsonify(jsonResp)
 
 if __name__ == '__main__':
