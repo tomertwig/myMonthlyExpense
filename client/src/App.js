@@ -185,8 +185,8 @@ export default class App extends Component {
       </div>
       <div> Total: {this.state.monthlyExpenses}</div>
       {this.renderExpensesTable()} 
-      {this.state.displayAll ? <button onClick={() => this.handleShowLess()}>show less..</button>
-       : <button onClick={() => this.handleDisplayAll()}>show all..</button>}
+      {this.state.displayAll ? <a href='#' onClick={() => this.handleShowLess()}>Show less..</a>
+       : <a href='#' onClick={() => this.handleDisplayAll()}>Show all..</a>}
 
 
       </div>
