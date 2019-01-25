@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 
 
+const hostName = window.location.hostname
+const serverPort = '5000'
+const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
+console.log('serverUrl')
+console.log(serverUrl)
+
+
 export default class App extends Component {
   constructor() {
     super()
@@ -10,22 +17,12 @@ export default class App extends Component {
       pyResp: [],
       lastTenExpenses:[]
     }
-    fetch('https://api.ipify.org?format=json')
-    .then(function(response) {
-      return response.json();
-    })
-    .then((json) => {
-      const serverHost = (json.ip === '93.173.170.102' ? '10.100.102.4' : '18.224.252.180')
-      const serverPort = '5000'
-      const serverUrl =  'http://' + serverHost + ':' + serverPort +'/'
-      this.state.serverUrl = serverUrl
-      this.fetchMonthlyExpensesAndLestTenExpenses()
-    }); 
+    this.fetchMonthlyExpensesAndLestTenExpenses()
 
   }
 
   handlePay = () => {
-    fetch(this.state.serverUrl + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
+    fetch(serverUrl + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
     }).then(() => {
@@ -58,7 +55,7 @@ export default class App extends Component {
   getMonthlyExpenses = () => {
     console.log('getMonthlyExpenses')
     console.log(this.state.serverUrl)
-    return fetch(this.state.serverUrl  + 'monthlyExpenses', {
+    return fetch(serverUrl  + 'monthlyExpenses', {
       method: 'GET',
       dataType: 'json',
     })
@@ -72,7 +69,7 @@ export default class App extends Component {
 
   getLestTenExpenses(){
     console.log('getLestTenExpenses')
-    return fetch(this.state.serverUrl  + 'lestTenExpenses', {
+    return fetch(serverUrl  + 'lestTenExpenses', {
       method: 'GET',
       dataType: 'json',
     })
