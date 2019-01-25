@@ -25,13 +25,18 @@ def get_monthly_expenses():
     print 'get_monthly_expenses !!!! '
 
     fetched_data = db.fetch_all(EXPENSES_TABLE)
-    print (fetched_data)
     mountly_expenses = 0
     for data in fetched_data:
         mountly_expenses += data['amount']
 
     jsonResp = {'monthlyExpenses': mountly_expenses}
     return jsonify(jsonResp)
+
+@app.route('/deleteLatestTransaction')
+def deleteLatestTransaction():
+    print ('deleteLatestTransaction !!!! ')
+    db.delete_latest_transaction(EXPENSES_TABLE)
+    return ''
 
 
 @app.route('/pay')
@@ -40,25 +45,33 @@ def pay():
     amount = request.args.get('amount', default=0, type=int)
     spent_type = request.args.get('spent_type', default=0, type=int)
     if amount == 0 or spent_type == 0:
-        return ''
+        print 'failed pay !!!! '
+        jsonResp = {'result': 'failed'}
+        return jsonify(jsonResp)
 
     db.create_transactional_table(EXPENSES_TABLE, ['spent_type','amount',],['integer','integer'])
     db.insert(EXPENSES_TABLE, ['spent_type','amount'],[spent_type, amount] )  
 
-    return ''
+    jsonResp = {'result': 'succeeded'}
+    return jsonify(jsonResp)
 
 
-@app.route('/lestTenExpenses')
-def getLestTenExpenses():
-    fetched_data = db.fetch_last_ten(EXPENSES_TABLE)
-    
+
+@app.route('/expenses')
+def getLestExpenses():
+    print ('request.args.get(all, default=False, type=bool)')
+
+    all = request.args.get('all', default=0, type=int) == 1
+    number_of_rows = 10 if not all else None
+
+    jsonResp = None
     data = []
+    fetched_data = db.fetch_last_rows(EXPENSES_TABLE, number_of_rows)
     for d in fetched_data:
-        ts = d[0]
-        data.append([ts.strftime("%Y-%m-%d"), d[1], d[2]])
-    jsonResp = {'lestTenExpenses': data}
+        data.append([d[0].strftime("%Y-%m-%d"), d[1], d[2]])
     
-    
+    jsonResp = {'expenses': data}
+
     return jsonify(jsonResp)
 
 if __name__ == '__main__':

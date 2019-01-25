@@ -14,10 +14,10 @@ export default class App extends Component {
     super()
 
     this.state = {
-      pyResp: [],
-      lastTenExpenses:[]
+      displayAll: false,
+      expenses:[]
     }
-    this.fetchMonthlyExpensesAndLestTenExpenses()
+    this.fetchMonthlyExpensesAndExpenses()
 
   }
 
@@ -25,36 +25,58 @@ export default class App extends Component {
     fetch(serverUrl + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
-    }).then(() => {
-      this.fetchMonthlyExpensesAndLestTenExpenses()
+    }).then(r => r.json())
+      .then((json) => {
+      console.log(json)
+
+      if (json.result === 'failed')
+      {
+        alert("Invalid Input");
+        return;
+      }
+      this.fetchMonthlyExpensesAndExpenses()
       })
   }
 
-  fetchMonthlyExpensesAndLestTenExpenses = () => {
+  handleDisplayAll(){
+    console.log('handleDisplayAll')
+    this.fetchMonthlyExpensesAndExpenses(true)
+  }
+
+  handleShowLess(){
+    console.log('handleShowLess')
+    this.fetchMonthlyExpensesAndExpenses(false)
+  }
+
+  
+  handleDeleteLatestTransaction = () => {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      fetch(serverUrl + 'deleteLatestTransaction',{
+        method: 'GET',
+        dataType: 'json'
+      }).then(() => {
+        this.fetchMonthlyExpensesAndExpenses()
+        })
+    }
+
+  }
+  
+  fetchMonthlyExpensesAndExpenses = (displayAll) => {
     let monthlyExpenses = this.getMonthlyExpenses();
     monthlyExpenses.then(monthlyExpensesValue => {
-      let lestTenExpenses = this.getLestTenExpenses();
-      lestTenExpenses.then(lestTenExpensesValue => {
-          console.log(lestTenExpensesValue)
-          this.setState({spentType: 0, amount:'', monthlyExpenses:monthlyExpensesValue, lastTenExpenses: lestTenExpensesValue})
+      let expenses = this.getExpenses(displayAll);
+      expenses.then(expensesValue => {
+          console.log(monthlyExpensesValue)
+          console.log('expensesValueNew')
+          console.log(expensesValue)
+
+          this.setState({spentType: 0, amount:'', monthlyExpenses:monthlyExpensesValue, expenses: expensesValue, displayAll})
       })
     })
   }
 
-  componentDidMount(){
-   // this.getMonthlyExpenses().then(response => console.log(response));
-
-  //  const monthlyExpenses = this.getMonthlyExpenses()
-//    const lestTenExpenses = this.getLestTenExpenses()
-    //console.log(monthlyExpenses)
-    //console.log(lestTenExpenses)
-
-    //this.setState({monthlyExpenses, lestTenExpenses})
-  }
-
   getMonthlyExpenses = () => {
     console.log('getMonthlyExpenses')
-    console.log(this.state.serverUrl)
     return fetch(serverUrl  + 'monthlyExpenses', {
       method: 'GET',
       dataType: 'json',
@@ -67,16 +89,23 @@ export default class App extends Component {
       .catch(err => console.log(err))
   }
 
-  getLestTenExpenses(){
-    console.log('getLestTenExpenses')
-    return fetch(serverUrl  + 'lestTenExpenses', {
+  getExpenses(displayAll){
+    console.log('displayAll')
+
+    console.log(displayAll)
+    let serverExpensesUrl = serverUrl  + 'expenses'
+    if (displayAll)
+    {
+      serverExpensesUrl += '?all=1'
+    }
+    return fetch(serverExpensesUrl, {
       method: 'GET',
       dataType: 'json',
     })
       .then(r => r.json())
       .then(r => {
         //console.log(r)
-        return r.lestTenExpenses
+        return r.expenses
       })
       .catch(err => console.log(err))
     }
@@ -103,10 +132,10 @@ export default class App extends Component {
     }
 
 
-  renderLastTenExpenses(){
-    const lastTenExpenses = this.state.lastTenExpenses
-    console.log('lastTenExpenses')
-    console.log(lastTenExpenses)
+  renderExpensesTable(){
+    const expenses = this.state.expenses
+    console.log('renderExpensesTable')
+    console.log(expenses)
 
     return (
       <table>
@@ -116,11 +145,14 @@ export default class App extends Component {
             <th>Expense</th>
           </tr>
       {
-        lastTenExpenses.map((expense, idx) => {
+        expenses.map((expense, idx) => {
          return (<tr key={idx}>
                   <td>{expense[0]}</td>
                   <td>{this.getTypeName.call(this, expense[1])}</td>
-                  <td>{expense[2]} </td>
+                  <td>{expense[2]}
+                      {idx === 0? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction()}>↩️</span>: ''}
+                  </td>
+
                   </tr>)
         })
       }
@@ -146,21 +178,27 @@ export default class App extends Component {
     console.log('render')
     return (
       <div className="App">
-      <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
-        <option value="0">{this.getTypeName(0)}</option>
-        <option value="1">{this.getTypeName(1)}</option>
-        <option value="2">{this.getTypeName(2)}</option>
-        <option value="3">{this.getTypeName(3)}</option>
-        <option value="4">{this.getTypeName(4)}</option>
-        <option value="5">{this.getTypeName(5)}</option>
-        <option value="6">{this.getTypeName(6)}</option>
-      </select>
-      <div/>
-      <input type="text" value={this.state.amount} onChange={this.handleAmountChanged} />
-      <div/>
+      <div className="inputForm">
+        <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
+          <option value="0">{this.getTypeName(0)}</option>
+          <option value="1">{this.getTypeName(1)}</option>
+          <option value="2">{this.getTypeName(2)}</option>
+          <option value="3">{this.getTypeName(3)}</option>
+          <option value="4">{this.getTypeName(4)}</option>
+          <option value="5">{this.getTypeName(5)}</option>
+          <option value="6">{this.getTypeName(6)}</option>
+        </select>
+        <div/>
+        <input type="text"  placeholder="amount.." value={this.state.amount} onChange={this.handleAmountChanged} />
+        <div/>
       <button onClick={() => this.handlePay()}>Pay</button>
-      <div> Total monthly expenses: {this.state.monthlyExpenses}</div>
-      {this.renderLastTenExpenses()} 
+      </div>
+      <div> Total: {this.state.monthlyExpenses}</div>
+      {this.renderExpensesTable()} 
+      {this.state.displayAll ? <button onClick={() => this.handleShowLess()}>show less..</button>
+       : <button onClick={() => this.handleDisplayAll()}>show all..</button>}
+
+
       </div>
     );
   }

@@ -34,8 +34,22 @@ th, td {
   padding: 3px;
   font-size: 10px;
 }
+.inputForm{
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
 
-
+}
+.deleteLatestTransaction{
+  margin: -7px; 
+  position: relative; 
+  left: 12px;
+}
+.deleteLatestTransaction:hover{
+  cursor: pointer; 
+}
 tr:nth-child(even) {background-color: #f2f2f2;}
 
 @keyframes App-logo-spin {

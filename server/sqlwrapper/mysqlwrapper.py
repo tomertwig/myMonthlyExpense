@@ -104,14 +104,17 @@ class mysqlwrapper():
         return None
 
     @__configuration_required
-    def fetch_last_ten(self, tablename):
+    def fetch_last_rows(self, tablename, row_number=None):
         """fetches the last data from the table
 		function definition:
 		fetch_last(tablename)
 		example: db.fetch_last('users')
 		return_type: single dictionary (i.e row)
 		"""
-        query = 'select * from ' + tablename + ' ORDER BY ts DESC LIMIT 10 '
+        query = 'select * from ' + tablename + ' ORDER BY ts DESC '
+
+        if row_number:
+            query += 'LIMIT ' +  str(row_number)
         try:
             self.__cur.execute(query)
         except Exception as e:
@@ -196,6 +199,16 @@ class mysqlwrapper():
         if type(where) != str:
             raise NotAStringError("please provide a valid where clause")
         query = 'delete from ' + tablename + ' where ' + where
+        try:
+            self.__cur.execute(query)
+            self.__conn.commit()
+        except Exception as e:
+            self.__conn.rollback()
+            raise e
+
+    @__configuration_required
+    def delete_latest_transaction(self, tablename):
+        query = 'delete from ' + tablename + ' order by ts desc limit 1'
         try:
             self.__cur.execute(query)
             self.__conn.commit()
