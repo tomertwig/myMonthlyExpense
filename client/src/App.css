@@ -34,6 +34,24 @@ th, td {
   padding: 3px;
   font-size: 10px;
 }
+
+.spentType{
+  text-align: left;
+  position: relative; 
+  left: 30px;
+}
+
+.TypeHeader{
+  text-align: left;
+  position: relative; 
+  left: 40px;
+}
+
+.payText{
+  position: relative; 
+  left: -4px;
+
+}
 .inputForm{
   display: flex;
   flex-direction: column;

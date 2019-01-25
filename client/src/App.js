@@ -8,6 +8,22 @@ const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
 console.log('serverUrl')
 console.log(serverUrl)
 
+const SpenTypes = {0:'Chose Type',
+  1:'🛒 Supermarket ',
+  2:'🍺 Bar',
+  3:'🍗 Restaurant',
+  4:'🏥 SuperPharm ',
+  5:'🚌 Rav-Kav',
+  6:'🚕 Taxi',
+  7:'👜 Fashion',
+  8:'👰🏻 Wedding',
+  9:'🚗 Car2Go',
+  10:'👩‍🍳 Gaz Billing',
+  11:'🚰 Water Billing',
+  12:'🔌 Electricity Billing',
+  13:'🏢 Arnona Billing',
+  14:'🏘️ House Committee',
+  15:'Other'}
 
 export default class App extends Component {
   constructor() {
@@ -101,31 +117,9 @@ export default class App extends Component {
     })
       .then(r => r.json())
       .then(r => {
-        //console.log(r)
         return r
       })
       .catch(err => console.log(err))
-    }
-    
-    getTypeName(t) {
-      switch(t) {
-        case 0: 
-          return 'Chose Type'
-        case 1:
-          return 'Bar'
-        case 2:
-          return 'Resturant'
-        case 3:
-          return 'Supermarket'
-        case 4:
-          return 'Tamara'
-        case 5:
-          return 'Fashion'
-        case 6:
-          return 'Other'
-        default:
-          return 'Other'
-       }
     }
 
 
@@ -138,14 +132,14 @@ export default class App extends Component {
       <table>
           <tr>
             <th>Date</th>
-            <th>Type</th>
+            <th className='TypeHeader'>Type</th>
             <th>Expense</th>
           </tr>
       {
         expenses.map((expense, idx) => {
          return (<tr key={idx}>
                   <td>{expense[0]}</td>
-                  <td>{this.getTypeName.call(this, expense[1])}</td>
+                  <td className='spentType'>{SpenTypes[expense[1]]}</td>
                   <td>{expense[2]}
                       {idx === 0? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction()}>↩️</span>: ''}
                   </td>
@@ -169,26 +163,25 @@ export default class App extends Component {
     
     this.setState({amount: e.target.value});
   }
-
+ 
+ renderSelect(){
+  return (
+    <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
+      {Object.keys(SpenTypes).map((key, value) => {
+       return (<option key={key} value={key}>{SpenTypes[key]}</option>
+       )})}
+    </select>
+  );
+}
 
   render() {
     console.log('render')
     return (
       <div className="App">
       <div className="inputForm">
-        <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
-          <option value="0">{this.getTypeName(0)}</option>
-          <option value="1">{this.getTypeName(1)}</option>
-          <option value="2">{this.getTypeName(2)}</option>
-          <option value="3">{this.getTypeName(3)}</option>
-          <option value="4">{this.getTypeName(4)}</option>
-          <option value="5">{this.getTypeName(5)}</option>
-          <option value="6">{this.getTypeName(6)}</option>
-        </select>
-        <div/>
+        {this.renderSelect()}
         <input type="text"  placeholder="amount.." value={this.state.amount} onChange={this.handleAmountChanged} />
-        <div/>
-      <button onClick={() => this.handlePay()}>Pay</button>
+        <button onClick={() => this.handlePay()}> <div className='payText' >💵 Pay </div></button>
       </div>
       <div> Total: {this.state.monthlyExpenses}</div>
       {this.renderExpensesTable()} 
