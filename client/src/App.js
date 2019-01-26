@@ -8,23 +8,29 @@ const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
 console.log('serverUrl')
 console.log(serverUrl)
 
-const SpenTypes = {0:'Chose Type',
+const SpenTypes = {
+  0:'Chose Type',
   1:'🛒 Supermarket ',
   2:'🍺 Bar',
   3:'🍽️ Restaurant',
   4:'🏥 SuperPharm ',
   5:'🚌 Rav-Kav',
-  6:'🚕 Taxi',
-  7:'👜 Fashion',
-  8:'👰🏻 Wedding',
-  9:'🚗 Car2Go',
-  10:'💅 Pedicure',
-  11:'👩‍🍳 Gaz Billing',
-  12:'🚰 Water Billing',
-  13:'🔌 Electricity Billing',
-  14:'🏢 Arnona Billing',
-  15:'🏘️ House Committee',
-  150:'Other'}
+  6:'👜 Fashion',
+  7:'❓ Other',
+  8:'🚕 Taxi',
+  9:'👰🏻 Wedding',
+  10:'🚗 Car2Go',
+  11:'💅 Pedicure',
+  12:'👩‍🍳 Gaz Billing',
+  13:'🚰 Water Billing',
+  14:'🔌 Electricity Billing',
+  15:'🏢 Arnona Billing',
+  16:'🏘️ House Committee',
+  17:'🍀 Weed',
+  160:'More..',
+  170:'Less..'
+}
+
 
 export default class App extends Component {
   constructor() {
@@ -32,7 +38,8 @@ export default class App extends Component {
 
     this.state = {
       displayAll: false,
-      expenses:[]
+      expenses:[],
+      showMore: false,
     }
     this.fetchExpenses(this.state.displayAll)
 
@@ -155,7 +162,20 @@ export default class App extends Component {
   
   handleSpentTypeChanged = (e) => {
     console.log(e.target.value);
-    this.setState({spentType: e.target.value});
+   // if (e.target.value == )
+
+    if (e.target.value == 160) // More..
+    {
+      this.setState({showMore: true});
+    }
+    else if(e.target.value == 170) // Less..
+    {
+      this.setState({showMore: false});
+    }
+    else
+    {
+      this.setState({spentType: e.target.value});
+    }
   }
 
 
@@ -169,8 +189,18 @@ export default class App extends Component {
   return (
     <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
       {Object.keys(SpenTypes).map((key, value) => {
-       return (<option key={key} value={key}>{SpenTypes[key]}</option>
-       )})}
+        if (this.state.showMore)
+        {
+          if (key != 160)
+          {
+            return (<option key={key} value={key}>{SpenTypes[key]}</option>)
+          }
+        }
+        else if (key < 8 || key == 160)
+        {
+          return (<option key={key} value={key}>{SpenTypes[key]}</option>)
+        }
+      })}
     </select>
   );
 }
