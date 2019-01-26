@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
 
+/*
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
+cookies.set('myCat', 'Pacman', { path: '/' });
+console.log(cookies.get('myCat')); // Pacman
+*/
 
 const hostName = window.location.hostname
 const serverPort = '5000'
 const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
-console.log('serverUrl')
 console.log(serverUrl)
 
 const SpenTypes = {
@@ -31,6 +36,7 @@ const SpenTypes = {
   170:'Less..'
 }
 
+const user_id = 1
 
 export default class App extends Component {
   constructor() {
@@ -41,12 +47,14 @@ export default class App extends Component {
       expenses:[],
       showMore: false,
     }
+
     this.fetchExpenses(this.state.displayAll)
 
   }
 
   handlePay = () => {
-    fetch(serverUrl + 'pay?amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
+    console.log(user_id)
+    fetch(serverUrl + 'pay?user_id=' + user_id +'&amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
@@ -75,49 +83,27 @@ export default class App extends Component {
   
   handleDeleteLatestTransaction = () => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
-      fetch(serverUrl + 'deleteLatestTransaction',{
+      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + user_id,{
         method: 'GET',
         dataType: 'json'
       }).then(() => {
         this.fetchExpenses(this.state.displayAll)
         })
     }
-
   }
   
   fetchExpenses = (displayAll) => {
     let expenses = this.getExpenses(displayAll);
     expenses.then(result => {
-        console.log('fetchExpenses')
-        console.log(result)
-        console.log('fetchExpenses_end')
-
         this.setState({spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll})
     })
   }
 
-  getMonthlyExpenses = () => {
-    console.log('getMonthlyExpenses')
-    return fetch(serverUrl  + 'monthlyExpenses', {
-      method: 'GET',
-      dataType: 'json',
-    })
-      .then(r => r.json())
-      .then(r => {
-        //console.log(r)
-        return r.monthlyExpenses
-      })
-      .catch(err => console.log(err))
-  }
-
   getExpenses(displayAll){
-    console.log('displayAll')
-
-    console.log(displayAll)
-    let serverExpensesUrl = serverUrl  + 'expenses'
+    let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + user_id
     if (displayAll)
     {
-      serverExpensesUrl += '?all=1'
+      serverExpensesUrl += '&all=1'
     }
     return fetch(serverExpensesUrl, {
       method: 'GET',
@@ -133,8 +119,6 @@ export default class App extends Component {
 
   renderExpensesTable(){
     const expenses = this.state.expenses
-    console.log('renderExpensesTable')
-    console.log(expenses)
 
     return (
       <table>
@@ -161,9 +145,6 @@ export default class App extends Component {
   }
   
   handleSpentTypeChanged = (e) => {
-    console.log(e.target.value);
-   // if (e.target.value == )
-
     if (e.target.value == 160) // More..
     {
       this.setState({showMore: true});
@@ -179,9 +160,7 @@ export default class App extends Component {
   }
 
 
-  handleAmountChanged = (e) => {
-    console.log(e.target.value);
-    
+  handleAmountChanged = (e) => {    
     this.setState({amount: e.target.value});
   }
  
@@ -206,7 +185,6 @@ export default class App extends Component {
 }
 
   render() {
-    console.log('render')
     return (
       <div className="App">
       <div className="inputForm">

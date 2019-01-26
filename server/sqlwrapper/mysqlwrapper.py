@@ -104,7 +104,7 @@ class mysqlwrapper():
         return None
 
     @__configuration_required
-    def fetch_last_rows(self, tablename, row_number=None):
+    def fetch_last_rows(self, tablename, user_id, row_number=None):
         """fetches the last data from the table
 		function definition:
 		fetch_last(tablename)
@@ -112,7 +112,7 @@ class mysqlwrapper():
 		return_type: single dictionary (i.e row)
 		"""
         
-        query = 'select * from ' + tablename + ' WHERE MONTH(ts) = MONTH(CURRENT_DATE()) AND YEAR(ts) = YEAR(CURRENT_DATE()) ORDER BY ts DESC '
+        query = 'select * from ' + tablename + ' WHERE '+  str(user_id) + ' = user_id and MONTH(ts) = MONTH(CURRENT_DATE()) AND YEAR(ts) = YEAR(CURRENT_DATE()) ORDER BY ts DESC '
         print query
         if row_number:
             query += 'LIMIT ' +  str(row_number)
@@ -208,8 +208,8 @@ class mysqlwrapper():
             raise e
 
     @__configuration_required
-    def delete_latest_transaction(self, tablename):
-        query = 'delete from ' + tablename + ' order by ts desc limit 1'
+    def delete_latest_transaction(self, tablename, user_id):
+        query = 'delete from ' + tablename  + ' WHERE ' +  str(user_id) + ' = user_id  order by ts desc limit 1'
         try:
             self.__cur.execute(query)
             self.__conn.commit()
