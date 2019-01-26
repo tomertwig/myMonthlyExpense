@@ -11,10 +11,13 @@ services:
       - NODE_ENV=development
   server:
     build: ./server
+    volumes: ['./server:/app']
     links:
       - db
     ports:
       - "5000:5000"
+    environment:
+      FLASK_DEBUG: 1
 
   db:
     image: mysql:5.7

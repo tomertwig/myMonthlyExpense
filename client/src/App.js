@@ -11,19 +11,20 @@ console.log(serverUrl)
 const SpenTypes = {0:'Chose Type',
   1:'🛒 Supermarket ',
   2:'🍺 Bar',
-  3:'🍗 Restaurant',
+  3:'🍽️ Restaurant',
   4:'🏥 SuperPharm ',
   5:'🚌 Rav-Kav',
   6:'🚕 Taxi',
   7:'👜 Fashion',
   8:'👰🏻 Wedding',
   9:'🚗 Car2Go',
-  10:'👩‍🍳 Gaz Billing',
-  11:'🚰 Water Billing',
-  12:'🔌 Electricity Billing',
-  13:'🏢 Arnona Billing',
-  14:'🏘️ House Committee',
-  15:'Other'}
+  10:'💅 Pedicure',
+  11:'👩‍🍳 Gaz Billing',
+  12:'🚰 Water Billing',
+  13:'🔌 Electricity Billing',
+  14:'🏢 Arnona Billing',
+  15:'🏘️ House Committee',
+  150:'Other'}
 
 export default class App extends Component {
   constructor() {
@@ -33,7 +34,7 @@ export default class App extends Component {
       displayAll: false,
       expenses:[]
     }
-    this.fetchExpenses()
+    this.fetchExpenses(this.state.displayAll)
 
   }
 
@@ -50,7 +51,7 @@ export default class App extends Component {
         alert("Invalid Input");
         return;
       }
-      this.fetchExpenses()
+      this.fetchExpenses(this.state.displayAll)
       })
   }
 
@@ -71,7 +72,7 @@ export default class App extends Component {
         method: 'GET',
         dataType: 'json'
       }).then(() => {
-        this.fetchExpenses()
+        this.fetchExpenses(this.state.displayAll)
         })
     }
 

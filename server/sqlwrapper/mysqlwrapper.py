@@ -111,8 +111,9 @@ class mysqlwrapper():
 		example: db.fetch_last('users')
 		return_type: single dictionary (i.e row)
 		"""
-        query = 'select * from ' + tablename + ' ORDER BY ts DESC '
-
+        
+        query = 'select * from ' + tablename + ' WHERE MONTH(ts) = MONTH(CURRENT_DATE()) AND YEAR(ts) = YEAR(CURRENT_DATE()) ORDER BY ts DESC '
+        print query
         if row_number:
             query += 'LIMIT ' +  str(row_number)
         try:

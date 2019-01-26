@@ -18,6 +18,7 @@ except Exception as e:
 
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'tom'
+db.create_transactional_table(EXPENSES_TABLE, ['spent_type','amount',],['integer','integer'])
 
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
@@ -36,7 +37,6 @@ def pay():
         jsonResp = {'result': 'failed'}
         return jsonify(jsonResp)
 
-    db.create_transactional_table(EXPENSES_TABLE, ['spent_type','amount',],['integer','integer'])
     db.insert(EXPENSES_TABLE, ['spent_type','amount'],[spent_type, amount] )  
 
     jsonResp = {'result': 'succeeded'}
@@ -46,26 +46,27 @@ def pay():
 
 @app.route('/expenses')
 def getLestExpenses():
-    print ('request.args.get(all, default=False, type=bool)')
-
     all = request.args.get('all', default=0, type=int) == 1
 
-    jsonResp = None
     data = []
-    fetched_data = db.fetch_last_rows(EXPENSES_TABLE)
-    number_of_rows = len(fetched_data) if all else min (10, len(fetched_data))
-
-    i = 0
     mountly_expenses = 0
-    for d in fetched_data[:number_of_rows]:
-        data.append([d[0].strftime("%Y-%m-%d"), d[1], d[2]])
-        mountly_expenses += int(d[2])
-        i += 1
+    jsonResp = {'expenses': [data], 'expensesSum': mountly_expenses}
 
-    for d in fetched_data[i:]:
-        mountly_expenses += int(d[2])
+    fetched_data = db.fetch_last_rows(EXPENSES_TABLE)
+    
+    if fetched_data:
+        number_of_rows = len(fetched_data) if all else min (10, len(fetched_data))
 
-    jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
+        i = 0
+        for d in fetched_data[:number_of_rows]:
+            data.append([d[0].strftime("%Y-%m-%d"), d[1], d[2]])
+            mountly_expenses += int(d[2])
+            i += 1
+
+        for d in fetched_data[i:]:
+            mountly_expenses += int(d[2])
+
+        jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
     return jsonify(jsonResp)
 
 if __name__ == '__main__':

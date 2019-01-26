@@ -58,8 +58,10 @@ th, td {
   margin-left: auto;
   margin-right: auto;
   width: 30%;
-
 }
+
+a:visited{ color: blue }
+
 .deleteLatestTransaction{
   margin: -7px; 
   position: relative; 
