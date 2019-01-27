@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
 
-/*
 import Cookies from 'universal-cookie';
+
 const cookies = new Cookies();
-cookies.set('myCat', 'Pacman', { path: '/' });
-console.log(cookies.get('myCat')); // Pacman
-*/
+//cookies.set('user_id', '2', { path: '/' });
+console.log(cookies.get('user_id')); // Pacman
+
 
 const hostName = window.location.hostname
 const serverPort = '5000'
@@ -26,17 +26,18 @@ const SpenTypes = {
   9:'👰🏻 Wedding',
   10:'🚗 Car2Go',
   11:'💅 Pedicure',
-  12:'👩‍🍳 Gaz Billing',
-  13:'🚰 Water Billing',
-  14:'🔌 Electricity Billing',
-  15:'🏢 Arnona Billing',
+  12:'👩‍🍳 Gaz Bill',
+  13:'🚰 Water Bill',
+  14:'🔌 Electricity Bill',
+  15:'🏢 Arnona Bill',
   16:'🏘️ House Committee',
   17:'🍀 Weed',
   160:'More..',
   170:'Less..'
 }
 
-const user_id = 1
+const user_id = cookies.get('user_id')
+console.log(user_id); // user_id
 
 export default class App extends Component {
   constructor() {
