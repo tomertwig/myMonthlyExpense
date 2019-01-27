@@ -4,7 +4,7 @@ import './App.css';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
-//cookies.set('user_id', '2', { path: '/' });
+cookies.set('user_id', '2', { path: '/' });
 console.log(cookies.get('user_id')); // Pacman
 
 
@@ -160,7 +160,6 @@ export default class App extends Component {
     }
   }
 
-
   handleAmountChanged = (e) => {    
     this.setState({amount: e.target.value});
   }
@@ -168,18 +167,33 @@ export default class App extends Component {
  renderSelect(){
   return (
     <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
-      {Object.keys(SpenTypes).map((key, value) => {
-        if (this.state.showMore)
-        {
-          if (key != 160)
-          {
-            return (<option key={key} value={key}>{SpenTypes[key]}</option>)
+      {
+        Object.keys(SpenTypes).map((key, value) => {
+          
+          if (key < 8 ){
+            if (key == 0){
+              return (<option key={key} value={key} disabled>{SpenTypes[key]}</option>)
+            }
+            else{
+              return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+            }
           }
-        }
-        else if (key < 8 || key == 160)
-        {
-          return (<option key={key} value={key}>{SpenTypes[key]}</option>)
-        }
+          else{
+            if (this.state.showMore)
+            {
+              if (key != 160)
+              {
+                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+              }
+            }
+            else
+            {
+              if (key == 160)
+              {
+                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+              }
+            }
+          }
       })}
     </select>
   );
@@ -197,8 +211,6 @@ export default class App extends Component {
       {this.renderExpensesTable()} 
       {this.state.displayAll ? <a href='#' onClick={() => this.handleShowLess()}>Show less..</a>
        : <a href='#' onClick={() => this.handleDisplayAll()}>Show all..</a>}
-
-
       </div>
     );
   }
