@@ -10,7 +10,7 @@
 
 # production
 /client/build
-
+/server/sqlwrapper/*.pyc
 # misc
 /client/.DS_Store
 /client/.env.local
