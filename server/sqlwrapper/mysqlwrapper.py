@@ -143,6 +143,7 @@ class mysqlwrapper():
 
         query = 'select * from ' + tablename + ' where ' + where
         try:
+            print query
             self.__cur.execute(query)
         except Exception as e:
             self.__conn.rollback()
@@ -246,7 +247,7 @@ class mysqlwrapper():
             raise e
 
     @__configuration_required
-    def create_table(self, tablename, columns, data_types, primary_key, auto_increment):
+    def create_table(self, tablename, columns, data_types, primary_key):
         """ creates a table in the database
 		function definition:
 		create_table(tablename,columns,data_types,primary_key)
@@ -276,13 +277,14 @@ class mysqlwrapper():
         temp_list = []
         for i in range(len(columns)):
             if (columns[i] is primary_key):
-                temp_list.append(columns[i] + ' ' + data_types[i] + ' NOT NULL AUTO_INCREMENT PRIMARY KEY' if auto_increment else  ' PRIMARY KEY')
+                print primary_key
+                temp_list.append(columns[i] + ' ' + data_types[i] + ' PRIMARY KEY')
 
             else:
                 temp_list.append(columns[i] + ' ' + data_types[i])
 
         temp = ', '.join(temp_list)
-        query = 'create table if not exists ' + tablename + ' ( ' + 'ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, ' + temp + ' )'
+        query = 'create table if not exists ' + tablename + ' ( ' + temp + ' )'
         print (query)
         try:
             self.__cur.execute(query)

@@ -4,8 +4,8 @@ import './App.css';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
-cookies.set('user_id', '2', { path: '/' });
-console.log(cookies.get('user_id')); // Pacman
+//cookies.set('user_id', '2', { path: '/' });
+//console.log(cookies.get('user_id'));
 
 
 const hostName = window.location.hostname
@@ -36,13 +36,13 @@ const SpenTypes = {
   170:'Less..'
 }
 
-const user_id = cookies.get('user_id')
-console.log(user_id); // user_id
 
 export default class App extends Component {
-  constructor() {
+  constructor(props) {
     super()
-
+    this.props = {
+      userID:props.userID
+    }
     this.state = {
       displayAll: false,
       expenses:[],
@@ -54,13 +54,11 @@ export default class App extends Component {
   }
 
   handlePay = () => {
-    console.log(user_id)
-    fetch(serverUrl + 'pay?user_id=' + user_id +'&amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
+    fetch(serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
       .then((json) => {
-      console.log(json)
 
       if (json.result === 'failed')
       {
@@ -84,7 +82,7 @@ export default class App extends Component {
   
   handleDeleteLatestTransaction = () => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
-      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + user_id,{
+      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID,{
         method: 'GET',
         dataType: 'json'
       }).then(() => {
@@ -101,7 +99,7 @@ export default class App extends Component {
   }
 
   getExpenses(displayAll){
-    let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + user_id
+    let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + this.props.userID
     if (displayAll)
     {
       serverExpensesUrl += '&all=1'

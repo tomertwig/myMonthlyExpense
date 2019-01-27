@@ -4,7 +4,7 @@ from flask_cors import CORS, cross_origin
 from flask import request
 import mysql.connector
 from sqlwrapper import mysqlwrapper
-
+import random
 
 DATABASE = 'test123'
 app = Flask(__name__)
@@ -18,7 +18,10 @@ except Exception as e:
 
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'with_user_id' # 'tom'
+USERS_TABLE = 'users1' # 'tom'
+
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
+db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(20)','integer'], primary_key='user_name')
 
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
@@ -76,6 +79,54 @@ def getLestExpenses():
             mountly_expenses += int(d[3])
 
         jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
+    return jsonify(jsonResp)
+
+@app.route('/login')
+def login():
+    print 'login !!!! '
+    user_name = request.args.get('user_name')
+    password = request.args.get('password')
+
+    fetched_data = db.fetch_all(USERS_TABLE)
+
+    result = 'failed'
+
+    fetched_data = db.fetch_by(USERS_TABLE, 'user_name= ' +"'" + str(user_name) +"'" )
+    print fetched_data
+    print "jdsaiojsdaioadjoidasjiodjiodsaji"
+
+    user_id = 0
+    if len(fetched_data) == 1 and fetched_data[0]['password'] == password:
+        result = 'succeeded' 
+        user_id = fetched_data[0]['user_id']
+
+    jsonResp = {'result': result, 'userID': user_id}
+    return jsonify(jsonResp)
+
+def _get_next_unique_user_id():
+    fetched_data = db.fetch_all(USERS_TABLE)
+
+    unique = False 
+    user_id = None
+    while not unique:
+        unique = True
+        user_id = random.randint(1,1000000)
+
+        for d in fetched_data:
+            if d['user_id'] == user_id:
+                unique = False
+                break
+    
+    return user_id
+
+@app.route('/signin')
+def sign_in():
+    user_name = request.args.get('user_name')
+    password = request.args.get('password')
+    user_id = _get_next_unique_user_id()
+    
+    db.insert(USERS_TABLE, ['user_name', 'password', 'user_id'], [user_name, password, user_id])  
+    jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
 
 if __name__ == '__main__':
