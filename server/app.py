@@ -20,7 +20,7 @@ except Exception as e:
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'with_user_id' # 'tom'
 MONTHLY_EXPENSES_TABLE = 'monthly'
-USERS_TABLE = 'users1' # 'tom'
+USERS_TABLE = 'users2' # 'tom'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
