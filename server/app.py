@@ -5,6 +5,7 @@ from flask import request
 import mysql.connector
 from sqlwrapper import mysqlwrapper
 import random
+from datetime import datetime
 
 DATABASE = 'test123'
 app = Flask(__name__)
@@ -18,16 +19,18 @@ except Exception as e:
 
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'with_user_id' # 'tom'
+MONTHLY_EXPENSES_TABLE = 'monthly'
 USERS_TABLE = 'users1' # 'tom'
-
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
-db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(20)','integer'], primary_key='user_name')
+db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
+db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
 
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
     user_id = request.args.get('user_id', default=0, type=int)
-    print ('deleteLatestTransaction !!!! ')
-    db.delete_latest_transaction(EXPENSES_TABLE, user_id)
+    deletePermenentExpense = request.args.get('deletePermenentExpense') == 'true'
+    table = MONTHLY_EXPENSES_TABLE if deletePermenentExpense else EXPENSES_TABLE
+    db.delete_latest_transaction(table, user_id)
     return ''
 
 
@@ -37,6 +40,10 @@ def pay():
     user_id = request.args.get('user_id', default=0, type=int)
     amount = request.args.get('amount', default=0, type=int)
     spent_type = request.args.get('spent_type', default=0, type=int)
+    is_monthly_expense = request.args.get('is_monthly_expense') == 'true'
+    print 'is_monthly_expense'
+    print is_monthly_expense
+
     if amount == 0 or spent_type == 0:
         print user_id
         print amount
@@ -45,13 +52,12 @@ def pay():
         print 'failed pay !!!! '
         jsonResp = {'result': 'failed'}
         return jsonify(jsonResp)
-
-    db.insert(EXPENSES_TABLE, ['user_id', 'spent_type', 'amount'], [user_id, spent_type, amount])  
+    
+    table = MONTHLY_EXPENSES_TABLE if is_monthly_expense else EXPENSES_TABLE
+    db.insert(table, ['user_id', 'spent_type', 'amount'], [user_id, spent_type, amount])  
 
     jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
-
-
 
 @app.route('/expenses')
 def getLestExpenses():
@@ -63,22 +69,32 @@ def getLestExpenses():
     mountly_expenses = 0
     jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
 
-    fetched_data = db.fetch_last_rows(EXPENSES_TABLE, user_id)
-    
+    fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id) or ()
+    permanent_index = len(fetched_mountly_data)
+
+    fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
+
+    now = datetime.now() 
+
+    fetched_data = fetched_mountly_data + fetched_permanent_data
     if fetched_data:
         number_of_rows = len(fetched_data) if all else min (10, len(fetched_data))
         print (fetched_data)
 
         i = 0
         for d in fetched_data[:number_of_rows]:
-            data.append([d[0].strftime("%Y-%m-%d"), d[2], d[3]])
+            if i >= len(fetched_mountly_data):
+                data.append([now.replace(day=1).strftime("%d-%m-%Y"), d[2], d[3]])
+            else:
+                data.append([d[0].strftime("%d-%m-%Y"), d[2], d[3]])
+            
             mountly_expenses += int(d[3])
             i += 1
 
         for d in fetched_data[i:]:
             mountly_expenses += int(d[3])
 
-        jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
+        jsonResp = {'expenses': data, 'expensesSum': mountly_expenses, 'permanentIndex':permanent_index}
     return jsonify(jsonResp)
 
 @app.route('/login')
@@ -93,7 +109,6 @@ def login():
 
     fetched_data = db.fetch_by(USERS_TABLE, 'user_name= ' +"'" + str(user_name) +"'" )
     print fetched_data
-    print "jdsaiojsdaioadjoidasjiodjiodsaji"
 
     user_id = 0
     if len(fetched_data) == 1 and fetched_data[0]['password'] == password:

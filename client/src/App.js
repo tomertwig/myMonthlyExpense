@@ -26,16 +26,19 @@ const SpenTypes = {
   9:'👰🏻 Wedding',
   10:'🚗 Car2Go',
   11:'💅 Pedicure',
-  12:'👩‍🍳 Gaz Bill',
-  13:'🚰 Water Bill',
-  14:'🔌 Electricity Bill',
-  15:'🏢 Arnona Bill',
-  16:'🏘️ House Committee',
-  17:'🍀 Weed',
+  12:'🍀 Green',
+  13:'🏡 Rent Bill',
+  14:'👩‍🍳 Gaz Bill',
+  15:'🚰 Water Bill',
+  16:'🔌 Electricity Bill',
+  17:'🏢 Arnona Bill',
+  18:'🏘️ House Committee',
+  19:'🏋️️ GYM',
   160:'More..',
-  170:'Less..'
+  161:'Make It Monthly Expense..',
+  162:'Make It One Time Expense..',
+  200:'Less..'
 }
-
 
 export default class App extends Component {
   constructor(props) {
@@ -47,6 +50,7 @@ export default class App extends Component {
       displayAll: false,
       expenses:[],
       showMore: false,
+      isMonthlyExpense: false,
     }
 
     this.fetchExpenses(this.state.displayAll)
@@ -54,7 +58,8 @@ export default class App extends Component {
   }
 
   handlePay = () => {
-    fetch(serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+ this.state.amount + '&spent_type=' + this.state.spentType, {
+    fetch(serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+
+    this.state.amount + '&spent_type=' + this.state.spentType +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
@@ -80,9 +85,10 @@ export default class App extends Component {
   }
 
   
-  handleDeleteLatestTransaction = () => {
+  handleDeleteLatestTransaction = (idx) => {
+    const deletePermenentExpense = idx != 0
     if (window.confirm("Are you sure you want to delete this transaction?")) {
-      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID,{
+      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&deletePermenentExpense='+deletePermenentExpense,{
         method: 'GET',
         dataType: 'json'
       }).then(() => {
@@ -94,7 +100,11 @@ export default class App extends Component {
   fetchExpenses = (displayAll) => {
     let expenses = this.getExpenses(displayAll);
     expenses.then(result => {
-        this.setState({spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll})
+      console.log(result.expensesSum)
+      console.log(result.expensesSum)
+
+        this.setState({isMonthlyExpense: false,
+           spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
     })
   }
 
@@ -132,10 +142,9 @@ export default class App extends Component {
                   <td>{expense[0]}</td>
                   <td className='spentType'>{SpenTypes[expense[1]]}</td>
                   <td>{expense[2]}
-                      {idx === 0? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction()}>↩️</span>: ''}
+                      {idx === 0 || idx===this.state.permanentIndex ? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(idx)}>↩️</span>: ''}
                   </td>
-
-                  </tr>)
+                </tr>)
         })
       }
        </table>
@@ -148,12 +157,18 @@ export default class App extends Component {
     {
       this.setState({showMore: true});
     }
-    else if(e.target.value == 170) // Less..
+    else if(e.target.value == 200) // Less..
     {
       this.setState({showMore: false});
+      this.setState({isMonthlyExpense: false});
     }
-    else
-    {
+    else if (e.target.value == 161){
+      this.setState({isMonthlyExpense: true});
+    }
+    else if (e.target.value == 162){
+      this.setState({isMonthlyExpense: false});
+    }
+    else{
       this.setState({spentType: e.target.value});
     }
   }
@@ -181,7 +196,19 @@ export default class App extends Component {
             {
               if (key != 160)
               {
-                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+                if (this.state.isMonthlyExpense)
+                {
+                  if (key != 161)
+                  {
+                    return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+                  }
+                }else
+                {
+                  if (key != 162)
+                  {
+                    return (<option key={key} value={key} >{SpenTypes[key]}</option>)
+                  }
+                }
               }
             }
             else
@@ -205,6 +232,7 @@ export default class App extends Component {
         <input type="text"  placeholder="amount.." value={this.state.amount} onChange={this.handleAmountChanged} />
         <button onClick={() => this.handlePay()}> <div className='payText' >💵 Pay </div></button>
       </div>
+      {this.state.isMonthlyExpense ? <div> Monthly Expense </div> : null}
       <div> Total: {this.state.monthlyExpenses}</div>
       {this.renderExpensesTable()} 
       {this.state.displayAll ? <a href='#' onClick={() => this.handleShowLess()}>Show less..</a>

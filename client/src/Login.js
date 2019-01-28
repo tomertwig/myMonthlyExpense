@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Cookies from 'universal-cookie';
 import App from './App';
-
+var SHA256 = require("crypto-js/sha256");
 
 const hostName = window.location.hostname
 const serverPort = '5000'
@@ -31,7 +31,7 @@ export default class Login extends Component {
   }
   handleLogin = () => {  
 
-    fetch(serverUrl + 'login?user_name=' + this.state.userName +'&password='+ this.state.password, {
+    fetch(serverUrl + 'login?user_name=' + this.state.userName +'&password='+  SHA256(this.state.password), {
         method: 'GET',
         dataType: 'json'
       }).then(r => r.json())
@@ -51,7 +51,8 @@ export default class Login extends Component {
   }
 
   handleSignIn = () => {
-    fetch(serverUrl + 'signin?user_name=' + this.state.userName +'&password='+ this.state.password, {
+
+    fetch(serverUrl + 'signin?user_name=' + this.state.userName +'&password='+ SHA256(this.state.password), {
         method: 'GET',
         dataType: 'json'
       }).then(r => r.json())
