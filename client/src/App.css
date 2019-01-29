@@ -101,6 +101,10 @@ table.paleBlueRows tbody td.spentType{
   margin:2px;
   font-size:15px;
 }
+.inputSelectLayout{
+  width: 100%;
+  height: 30px;
+}
 .checkboxLayout{
   width: 15%;
   padding:4px;

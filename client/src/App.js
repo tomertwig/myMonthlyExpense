@@ -14,7 +14,6 @@ const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
 console.log(serverUrl)
 
 const SpenTypes = {
-  0:'Chose Type',
   1:'🛒 Supermarket ',
   2:'🍺 Bar',
   3:'🍽️ Restaurant',
@@ -28,15 +27,19 @@ const SpenTypes = {
   11:'💅 Pedicure',
   12:'🍀 Green',
   13:'🏡 Rent Bill',
-  14:'👩‍🍳 Gaz Bill',
+  14:'👩‍🍳 Gas Bill',
   15:'🚰 Water Bill',
   16:'🔌 Electricity Bill',
   17:'🏢 Arnona Bill',
   18:'🏘️ House Committee',
-  19:'🏋️️ GYM',
-  160:'More..',
-  200:'Less..'
+  19:'🌐 Internet Bill',
+  20:'🏋️️ GYM'
 }
+
+let SpenTypesValues = {};
+Object.keys(SpenTypes).map((key, value) => {
+  SpenTypesValues[SpenTypes[key]] = key;
+})
 
 export default class App extends Component {
   constructor(props) {
@@ -47,8 +50,8 @@ export default class App extends Component {
     this.state = {
       displayAll: false,
       expenses:[],
-      showMore: false,
       isMonthlyExpense: false,
+      spentTypeInputText: '',
     }
 
     this.fetchExpenses(this.state.displayAll)
@@ -57,7 +60,7 @@ export default class App extends Component {
 
   handlePay = () => {
     fetch(serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+
-    this.state.amount + '&spent_type=' + this.state.spentType +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
+    this.state.amount + '&spent_type=' + SpenTypesValues[this.state.spentTypeInputText] +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
@@ -101,7 +104,7 @@ export default class App extends Component {
       console.log(result.expensesSum)
       console.log(result.expensesSum)
 
-        this.setState({spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
+      this.setState({spentTypeInputText:'', amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
     })
   }
 
@@ -158,17 +161,7 @@ export default class App extends Component {
   }
   
   handleSpentTypeChanged = (e) => {
-    if (e.target.value == 160) // More..
-    {
-      this.setState({showMore: true});
-    }
-    else if(e.target.value == 200) // Less..
-    {
-      this.setState({showMore: false});
-    }
-    else{
-      this.setState({spentType: e.target.value});
-    }
+    this.setState({spentTypeInputText: e.target.value});
   }
 
   handleCheck = () => { 
@@ -179,39 +172,18 @@ export default class App extends Component {
   handleAmountChanged = (e) => {    
     this.setState({amount: e.target.value});
   }
- 
+
  renderSelect(){
   return (
-    <select className='inputLayout' value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
+    <form className='inputLayout' >
+    <input className='inputSelectLayout' list='SpenTypesList' placeholder="Chose type.." value={this.state.spentTypeInputText}  onChange={this.handleSpentTypeChanged} />
+    <datalist id="SpenTypesList">
       {
         Object.keys(SpenTypes).map((key, value) => {
-          
-          if (key < 8 ){
-            if (key == 0){
-              return (<option key={key} value={key} disabled>{SpenTypes[key]}</option>)
-            }
-            else{
-              return (<option key={key} value={key} >{SpenTypes[key]}</option>)
-            }
-          }
-          else{
-            if (this.state.showMore)
-            {
-              if (key != 160)
-              {
-                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
-              }
-            }
-            else
-            {
-              if (key == 160)
-              {
-                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
-              }
-            }
-          }
+          return (<option key={key} value={SpenTypes[key]}/>)
       })}
-    </select>
+    </datalist>
+    </form>
   );
 }
 
