@@ -22,7 +22,7 @@ const SpenTypes = {
   6:'👜 Fashion',
   7:'❓ Other',
   8:'🚕 Taxi',
-  9:'👰🏻 Wedding',
+  9:'🥂 Events',
   10:'🚗 Car2Go',
   11:'💅 Pedicure',
   12:'🍀 Green',
@@ -32,7 +32,7 @@ const SpenTypes = {
   16:'🔌 Electricity Bill',
   17:'🏢 Arnona Bill',
   18:'🏘️ House Committee',
-  19:'🌐 Internet Bill',
+  19:'�� Internet Bill',
   20:'🏋️️ GYM'
 }
 
