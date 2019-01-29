@@ -35,8 +35,6 @@ const SpenTypes = {
   18:'🏘️ House Committee',
   19:'🏋️️ GYM',
   160:'More..',
-  161:'Make It Monthly Expense..',
-  162:'Make It One Time Expense..',
   200:'Less..'
 }
 
@@ -76,12 +74,12 @@ export default class App extends Component {
 
   handleDisplayAll(){
     console.log('handleDisplayAll')
-    this.fetchExpenses(true)
+    this.setState({displayAll:true})
   }
 
   handleShowLess(){
     console.log('handleShowLess')
-    this.fetchExpenses(false)
+    this.setState({displayAll:false})
   }
 
   
@@ -103,17 +101,12 @@ export default class App extends Component {
       console.log(result.expensesSum)
       console.log(result.expensesSum)
 
-        this.setState({isMonthlyExpense: false,
-           spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
+        this.setState({spentType: 0, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
     })
   }
 
   getExpenses(displayAll){
     let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + this.props.userID
-    if (displayAll)
-    {
-      serverExpensesUrl += '&all=1'
-    }
     return fetch(serverExpensesUrl, {
       method: 'GET',
       dataType: 'json',
@@ -130,23 +123,35 @@ export default class App extends Component {
     const expenses = this.state.expenses
 
     return (
-      <table>
+      <table className='paleBlueRows'>
+        <thead>
           <tr>
             <th>Date</th>
-            <th className='TypeHeader'>Type</th>
+            <th>Type</th>
             <th>Expense</th>
           </tr>
+        </thead>
+        <tbody>
       {
         expenses.map((expense, idx) => {
+        if (idx >7){
+          if (!this.state.displayAll)
+            {
+             return null ;
+            }
+        }
+
+
          return (<tr key={idx}>
                   <td>{expense[0]}</td>
                   <td className='spentType'>{SpenTypes[expense[1]]}</td>
                   <td>{expense[2]}
-                      {idx === 0 || idx===this.state.permanentIndex ? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(idx)}>↩️</span>: ''}
+                      {idx === 0 || idx===this.state.permanentIndex ? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(idx)}>❌</span>: ''}
                   </td>
                 </tr>)
         })
       }
+       </tbody>
        </table>
     );
   
@@ -160,17 +165,15 @@ export default class App extends Component {
     else if(e.target.value == 200) // Less..
     {
       this.setState({showMore: false});
-      this.setState({isMonthlyExpense: false});
-    }
-    else if (e.target.value == 161){
-      this.setState({isMonthlyExpense: true});
-    }
-    else if (e.target.value == 162){
-      this.setState({isMonthlyExpense: false});
     }
     else{
       this.setState({spentType: e.target.value});
     }
+  }
+
+  handleCheck = () => { 
+    const isMonthlyExpense = !this.state.isMonthlyExpense
+    this.setState({isMonthlyExpense});
   }
 
   handleAmountChanged = (e) => {    
@@ -179,7 +182,7 @@ export default class App extends Component {
  
  renderSelect(){
   return (
-    <select value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
+    <select className='inputLayout' value={this.state.spentType} onChange={this.handleSpentTypeChanged}>
       {
         Object.keys(SpenTypes).map((key, value) => {
           
@@ -196,19 +199,7 @@ export default class App extends Component {
             {
               if (key != 160)
               {
-                if (this.state.isMonthlyExpense)
-                {
-                  if (key != 161)
-                  {
-                    return (<option key={key} value={key} >{SpenTypes[key]}</option>)
-                  }
-                }else
-                {
-                  if (key != 162)
-                  {
-                    return (<option key={key} value={key} >{SpenTypes[key]}</option>)
-                  }
-                }
+                return (<option key={key} value={key} >{SpenTypes[key]}</option>)
               }
             }
             else
@@ -229,14 +220,20 @@ export default class App extends Component {
       <div className="App">
       <div className="inputForm">
         {this.renderSelect()}
-        <input type="text"  placeholder="amount.." value={this.state.amount} onChange={this.handleAmountChanged} />
-        <button onClick={() => this.handlePay()}> <div className='payText' >💵 Pay </div></button>
+        <input type="text"  className='inputLayout' placeholder="amount.." value={this.state.amount} onChange={this.handleAmountChanged} />
+        <div className="paymentButtons">
+          <span className='checkboxLayout'onClick={()=>this.handleCheck()}>⇄</span> 
+          {this.state.isMonthlyExpense ? 
+          <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
+          <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
+        </div>
       </div>
-      {this.state.isMonthlyExpense ? <div> Monthly Expense </div> : null}
-      <div> Total: {this.state.monthlyExpenses}</div>
       {this.renderExpensesTable()} 
-      {this.state.displayAll ? <a href='#' onClick={() => this.handleShowLess()}>Show less..</a>
-       : <a href='#' onClick={() => this.handleDisplayAll()}>Show all..</a>}
+      <div className="endLayout">
+        <div className="totalExpenses"> Total: {this.state.monthlyExpenses}</div>
+        {this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
+          <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>}
+        </div>
       </div>
     );
   }

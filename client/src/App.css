@@ -22,23 +22,55 @@
   color: #61dafb;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
+table.paleBlueRows {
   margin-left: auto;
   margin-right: auto;
-}
-
-th, td {
+  font-family: "Times New Roman", Times, serif;
+  border: 1px solid #FFFFFF;
+  width: 93%;
+  height: 100%;
   text-align: center;
-  padding: 3px;
-  font-size: 10px;
+  border-collapse: collapse;
+}
+table.paleBlueRows td, table.paleBlueRows th {
+  border: 1px solid #FFFFFF;
+  padding: 3px 2px;
+}
+table.paleBlueRows tbody td {
+  font-size: 16px;
+}
+table.paleBlueRows tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.paleBlueRows thead {
+  background: #0B6FA4;
+  border-bottom: 5px solid #FFFFFF;
+}
+table.paleBlueRows thead th {
+  font-size: 16px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #FFFFFF;
+}
+table.paleBlueRows thead th:first-child {
+  border-left: none;
 }
 
-.spentType{
+table.paleBlueRows tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  background: #D0E4F5;
+  border-top: 3px solid #444444;
+}
+table.paleBlueRows tfoot td {
+  font-size: 14px;
+}
+table.paleBlueRows tbody td.spentType{
   text-align: left;
   position: relative; 
-  left: 30px;
+  padding-left:40px; 
 }
 
 .TypeHeader{
@@ -50,29 +82,82 @@ th, td {
 .payText{
   position: relative; 
   left: -4px;
-
+  font-size:13px;
 }
+
 .inputForm{
   display: flex;
   flex-direction: column;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 8px;
-  width: 30%;
+  margin-top: 10px;
+  width: 80%;
+  height: 80%;
 }
+
+.inputLayout{
+  width: 80%;
+  height: 30px;
+  margin:2px;
+  font-size:15px;
+}
+.checkboxLayout{
+  width: 15%;
+  padding:4px;
+  height: 30px;
+  font-size:30px;
+}
+.inputButton{
+  width: 65%;
+  height: 47px;
+  padding:10px;
+  font-size:14px;
+
+}
+
+.paymentButtons{
+  display: flex;
+  flex-direction: row;
+
+}
+.endLayout{
+  display: flex;
+}
+.totalExpenses {
+  margin: 10px;
+  color: #0B6FA4;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Helvetica;
+  text-shadow:1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  }
+  
+  .hit-the-floor {
+    text-align: center;
+  }
+  
+  body {
+    background-color: #f1f1f1;
+  }
 
 a:visited{ color: blue }
 
 .deleteLatestTransaction{
   margin: -7px; 
   position: relative; 
-  left: 12px;
+  left: 10px;
+  top: -2px;
+  font-size: 9px;
 }
 .deleteLatestTransaction:hover{
   cursor: pointer; 
 }
 tr:nth-child(even) {background-color: #f2f2f2;}
+.arrow{
+  font-size: 33px;
+  margin-left: 5%;
 
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

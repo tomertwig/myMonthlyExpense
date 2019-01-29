@@ -63,8 +63,6 @@ def pay():
 def getLestExpenses():
     user_id = request.args.get('user_id', default=0, type=int)
 
-    all = request.args.get('all', default=0, type=int) == 1
-
     data = []
     mountly_expenses = 0
     jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
@@ -77,22 +75,20 @@ def getLestExpenses():
     now = datetime.now() 
 
     fetched_data = fetched_mountly_data + fetched_permanent_data
-    if fetched_data:
-        number_of_rows = len(fetched_data) if all else min (10, len(fetched_data))
-        print (fetched_data)
+    print('len(fetched_data')
 
+    print(len(fetched_data))
+    if fetched_data:
         i = 0
-        for d in fetched_data[:number_of_rows]:
+        for d in fetched_data:
             if i >= len(fetched_mountly_data):
-                data.append([now.replace(day=1).strftime("%d-%m-%Y"), d[2], d[3]])
+                data.append([now.replace(day=1).strftime("%d-%m"), d[2], d[3]])
             else:
-                data.append([d[0].strftime("%d-%m-%Y"), d[2], d[3]])
+                data.append([d[0].strftime("%d-%m"), d[2], d[3]])
             
             mountly_expenses += int(d[3])
             i += 1
 
-        for d in fetched_data[i:]:
-            mountly_expenses += int(d[3])
 
         jsonResp = {'expenses': data, 'expensesSum': mountly_expenses, 'permanentIndex':permanent_index}
     return jsonify(jsonResp)
