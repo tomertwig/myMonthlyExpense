@@ -176,7 +176,7 @@ export default class App extends Component {
  renderSelect(){
   return (
     <form className='inputLayout' >
-    <input className='inputSelectLayout' list='SpenTypesList' placeholder="Chose type.." value={this.state.spentTypeInputText}  onChange={this.handleSpentTypeChanged} />
+    <input list='SpenTypesList' type="text"  placeholder="Chose type.." value={this.state.spentTypeInputText}  onChange={this.handleSpentTypeChanged} />
     <datalist id="SpenTypesList">
       {
         Object.keys(SpenTypes).map((key, value) => {
