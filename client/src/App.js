@@ -180,6 +180,8 @@ export default class App extends Component {
 
 updateFilter = (evt) => {
   console.log('updateFilter')
+  $(".DataListOption:first-child").css("background-color", "#D0E4F5");
+
    let value = '';
 
    if (evt) {
@@ -221,7 +223,6 @@ hideList() { // whe we click that name after by this function the list hide.
 
 handleKeyPressedForList = (e) => {
   console.log(e)
-  $(".DataListFirst").css("background-color", " #D0E4F5");
 
   if (e.key === 'Enter') {
     console.log(this.state.filteredOptions)
@@ -248,16 +249,16 @@ handleKeyPressedForNumber= (e) => {
   }
 }
 
-onContentScroll = () => {
-  $(".DataListFirst").css("background-color", "white");
+onCalenderClicked = () => {
   console.log('scrolllllll')
 }
+
 
 renderSelect(){
   console.log('renderSelect')
   console.log(this.state.filteredOptions)
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
-      const dsClassName = index == 0? 'DataListOption DataListFirst': 'DataListOption';
+      const dsClassName = index == 0? 'DataListOption': 'DataListOption';
       return (<div className={dsClassName} data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
 
@@ -269,7 +270,7 @@ renderSelect(){
       <input className="dropbtn" type="text" value={textValue}  onKeyPress={this.handleKeyPressedForList} 
         onChange={this.updateFilter.bind(this)} onFocus={this.showList} placeholder="Chose type.." />
       {this.state.expanded && displayList?
-      <div className="dropdown-content" onScroll={() => this.onContentScroll()}>
+      <div className="dropdown-content">
         {this.state.expanded && displayList}
       </div>: null
       }
@@ -289,6 +290,7 @@ renderSelect(){
           {this.state.isMonthlyExpense ? 
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
+          <span className='checkboxLayout'onClick={()=>this.onCalenderClicked()}>📅 </span> 
         </div>
       </div>
       {this.renderExpensesTable()} 
