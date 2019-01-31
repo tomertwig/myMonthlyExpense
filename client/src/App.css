@@ -212,10 +212,12 @@ tr:nth-child(even) {background-color: #f2f2f2;}
   background:  #ddd;
 }
 .DataListOption:hover{
-  background-color: #ddd;
-
+  background-color:    #D0E4F5;
 }
 
+.DataListFirst{
+  background-color:    #D0E4F5;
+}
     
 
 .dropdown {

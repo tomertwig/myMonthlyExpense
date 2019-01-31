@@ -221,6 +221,8 @@ hideList() { // whe we click that name after by this function the list hide.
 
 handleKeyPressedForList = (e) => {
   console.log(e)
+  $(".DataListFirst").css("background-color", " #D0E4F5");
+
   if (e.key === 'Enter') {
     console.log(this.state.filteredOptions)
     var filteredOptionsKeys = Object.keys(this.state.filteredOptions)
@@ -246,14 +248,18 @@ handleKeyPressedForNumber= (e) => {
   }
 }
 
+onContentScroll = () => {
+  $(".DataListFirst").css("background-color", "white");
+  console.log('scrolllllll')
+}
+
 renderSelect(){
   console.log('renderSelect')
   console.log(this.state.filteredOptions)
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
-      return (<div className='DataListOption' data-id={key} onClick={()=>this.handleClick(key)}>{this.state.filteredOptions[key]}</div>)
+      const dsClassName = index == 0? 'DataListOption DataListFirst': 'DataListOption';
+      return (<div className={dsClassName} data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
-
-
 
 
   const  { textValue } = this.state;
@@ -263,7 +269,7 @@ renderSelect(){
       <input className="dropbtn" type="text" value={textValue}  onKeyPress={this.handleKeyPressedForList} 
         onChange={this.updateFilter.bind(this)} onFocus={this.showList} placeholder="Chose type.." />
       {this.state.expanded && displayList?
-      <div className="dropdown-content">
+      <div className="dropdown-content" onScroll={() => this.onContentScroll()}>
         {this.state.expanded && displayList}
       </div>: null
       }
