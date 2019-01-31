@@ -44,7 +44,7 @@ def pay():
     print 'is_monthly_expense'
     print is_monthly_expense
 
-    if amount == 0 or spent_type == 0:
+    if amount <= 0 or spent_type == 0:
         print user_id
         print amount
         print spent_type
