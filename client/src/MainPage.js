@@ -2,8 +2,11 @@
 import $ from "jquery";
 import React, { Component } from 'react';
 import './App.css';
+import MonthlyExpensesTable from "./MonthlyExpensesTable";
+import {serverUrl} from './Browse'
+import {clientUrl} from './Browse'
 
-const SpenTypes = {
+export const SpenTypes = {
   1:'🛒 Supermarket',
   2:'🍺 Bar',
   3:'🍽️ Restaurant',
@@ -34,38 +37,31 @@ export default class App extends Component {
     super()
     this.props = {
       userID:props.userID,
-      serverUrl:props.serverUrl,
-      clientUrl:props.clientUrl
     }
     this.state = {
       displayAll: false,
-      expenses:[],
       isMonthlyExpense: false,
       spentTypeKey: -1,
       filteredOptions: {},
-      textValue:''
+      textValue:'',
     }
-
-    this.fetchExpenses(this.state.displayAll)
-
   }
 
   handlePay = () => {
     $('input').blur();
-    fetch(this.props.serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+
+    fetch(serverUrl+ 'pay?user_id=' + this.props.userID +'&amount='+
     this.state.amount + '&spent_type=' + this.state.spentTypeKey +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
       .then((json) => {
-
+        this.setState({textValue:'', spentTypeKey: -1, amount:''})
       if (json.result === 'failed')
       {
         alert("Invalid Input");
         return;
       }
-      this.fetchExpenses(this.state.displayAll)
-      })
+    })
   }
 
   handleDisplayAll(){
@@ -76,82 +72,7 @@ export default class App extends Component {
   handleShowLess(){
     console.log('handleShowLess')
     this.setState({displayAll:false})
-  }
-
-  
-  handleDeleteLatestTransaction = (idx) => {
-    const deletePermenentExpense = idx != 0
-    if (window.confirm("Are you sure you want to delete this transaction?")) {
-      fetch(this.props.serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&deletePermenentExpense='+deletePermenentExpense,{
-        method: 'GET',
-        dataType: 'json'
-      }).then(() => {
-        this.fetchExpenses(this.state.displayAll)
-        })
-    }
-  }
-  
-  fetchExpenses = (displayAll) => {
-    let expenses = this.getExpenses(displayAll);
-    expenses.then(result => {
-      console.log(result.expensesSum)
-      console.log(result.expensesSum)
-
-      this.setState({textValue:'', spentTypeKey: -1, amount:'', monthlyExpenses:result.expensesSum, expenses: result.expenses, displayAll, permanentIndex:result.permanentIndex})
-    })
-  }
-
-  getExpenses(displayAll){
-    let serverExpensesUrl = this.props.serverUrl  + 'expenses?user_id=' + this.props.userID
-    return fetch(serverExpensesUrl, {
-      method: 'GET',
-      dataType: 'json',
-    })
-      .then(r => r.json())
-      .then(r => {
-        return r
-      })
-      .catch(err => console.log(err))
-    }
-
-
-  renderExpensesTable(){
-    const expenses = this.state.expenses
-
-    return (
-      <table className='paleBlueRows'>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Expense</th>
-          </tr>
-        </thead>
-        <tbody>
-      {
-        expenses.map((expense, idx) => {
-        if (idx >7){
-          if (!this.state.displayAll)
-            {
-             return null ;
-            }
-        }
-
-
-         return (<tr key={idx}>
-                  <td>{expense[0]}</td>
-                  <td className='spentType'>{SpenTypes[expense[1]]}</td>
-                  <td>{expense[2]}
-                      {idx === 0 || idx===this.state.permanentIndex ? <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(idx)}>❌</span>: ''}
-                  </td>
-                </tr>)
-        })
-      }
-       </tbody>
-       </table>
-    );
-  
-  }
+  }  
   
   handleSpentTypeChanged = (key) => {
     console.log('handleSpentTypeChanged')
@@ -265,6 +186,10 @@ renderSelect(){
 }
 
   render() {
+    var today = new Date();
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+
     return (
       <div>
       <div className="inputForm">
@@ -276,15 +201,18 @@ renderSelect(){
           {this.state.isMonthlyExpense ? 
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
-          <a className='Calender' href={this.props.clientUrl + 'history'}>📅</a>
+          <a className='Calender' href={clientUrl + 'history'}>📅</a>
         </div>
       </div>
-      {this.renderExpensesTable()} 
-      <div className="endLayout">
-        <div className="totalExpenses"> Total: {this.state.monthlyExpenses}</div>
-        {this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
-          <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>}
-        </div>
+      <MonthlyExpensesTable
+       userID={this.props.userID}
+       displayAll={this.state.displayAll}
+       mounth={mm}
+       year={yyyy}
+       writePermissions={true}>
+      </MonthlyExpensesTable>
+      {this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
+      <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>}
       </div>
     );
   }

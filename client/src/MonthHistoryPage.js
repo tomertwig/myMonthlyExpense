@@ -2,7 +2,7 @@ import React from  'react'
 import './App.css';
 import {serverUrl} from './Browse'
 
-class HistoryPage extends React.Component {
+class MounthHistoryPage extends React.Component {
     constructor(props) {
         super()
 
@@ -23,25 +23,26 @@ class HistoryPage extends React.Component {
           .then(r => r.json())
           .then(r => {
              this.setState({mouthToAmount:r})
+             console.log(r)
           })
           .catch(err => console.log(err))
     }
 
-    renderTable () {
+    renderTableContent () {
         let content = []
+        console.log('this.state.mouthToAmount')
+
         console.log(this.state.mouthToAmount)
         if (this.state.mouthToAmount)
         {
-            console.log('this.state.mouthToAmount')
 
-            for (let i = 0; i < this.state.mouthToAmount.result.length;i++)
-            {
-                console.log(this.state.mouthToAmount.result[i])
-                content.push(<tr key={i}>
-                    <td><a href={'/history/' + this.state.mouthToAmount.result[i].date}>{this.state.mouthToAmount.result[i].date}</a></td>
-                    <td> {this.state.mouthToAmount.result[i].amount}</td>
-                </tr>)
-            }
+            Object.keys(this.state.mouthToAmount).map((key, index)  => {  
+                console.log('1')
+                content.push(<tr key={key}>
+                        <td><a href={'/history/' + this.state.mouthToAmount[key][index].date}>{this.state.mouthToAmount[key][index].date}</a></td>
+                        <td> {this.state.mouthToAmount[key][index].amount}</td>
+                    </tr>)
+            })
         }
         return content;
     }
@@ -57,7 +58,7 @@ class HistoryPage extends React.Component {
               </tr>
             </thead>
             <tbody>
-          {this.renderTable()}
+          {this.renderTableContent()}
            </tbody>
            </table>
         );
@@ -69,4 +70,4 @@ class HistoryPage extends React.Component {
     }
 }
 
-export default HistoryPage;
+export default MounthHistoryPage;

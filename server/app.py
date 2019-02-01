@@ -61,14 +61,22 @@ def pay():
 
 @app.route('/expenses')
 def getLestExpenses():
+    print 'getLestExpenses'
+
     user_id = request.args.get('user_id', default=0, type=int)
+    month = request.args.get('month', default=0, type=int)
+    year = request.args.get('year', default=0, type=int)
+
+    print month
+    print year
+
     now = datetime.now() 
 
-    month = datetime.now().month
-    year = datetime.now().year
+
     data = []
     mountly_expenses = 0
     jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
+    print user_id
 
     fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
     permanent_index = len(fetched_mountly_data)
@@ -83,7 +91,7 @@ def getLestExpenses():
         i = 0
         for d in fetched_data:
             if i >= len(fetched_mountly_data):
-                data.append([now.replace(day=1).strftime("%d-%m"), d[2], d[3]])
+                data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
             else:
                 data.append([d[0].strftime("%d-%m"), d[2], d[3]])
             
@@ -153,10 +161,11 @@ def _month_year_iter():
 
 
     ym_end= 12*end_year + end_month - 1
+    print ym_start
     print ym_end
 
 
-    for ym in range( ym_start, ym_end ):
+    for ym in range( ym_start, ym_end +1 ):
         y, m = divmod( ym, 12 )
         yield m+1, y
 
@@ -166,19 +175,24 @@ def all_expenses():
     result = []
     now = datetime.now() 
 
+    fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
+
     for month, year in _month_year_iter():
+        print 'month'
+        print month
+
         fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
-        fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
         fetched_data = fetched_mountly_data + fetched_permanent_data
 
         mountly_expenses = 0
         for d in fetched_data:
             mountly_expenses += int(d[3])
         
-        date = now.replace(month=month, year=year).strftime("%m-%y")
-        
+        date = now.replace(month=month, year=year).strftime("%m-%Y")
+        print result
         result = [{'date': date, 'amount': mountly_expenses }] + result
-        
+        print result
+
     jsonResp = {'result': result}
     return jsonify(jsonResp)
 

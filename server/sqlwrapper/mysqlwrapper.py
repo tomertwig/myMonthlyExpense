@@ -111,7 +111,8 @@ class mysqlwrapper():
 		example: db.fetch_last('users')
 		return_type: single dictionary (i.e row)
 		"""
-        
+        print 'fetch_last_rows'
+        print month
         filter=''
         if month and year:
             filter = 'AND MONTH(ts) = ' + str(month) + ' AND YEAR(ts) = ' + str(year)
