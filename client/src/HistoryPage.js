@@ -10,11 +10,12 @@ class HistoryPage extends React.Component {
             userID:props.userID,
           }
         this.state = {
+            mouthToAmount:null
         }
+        this.fetchExpenses()
     }
 
-    componentDidMount(){
-        console.log('HistoryPagecomponentDidMount')
+    fetchExpenses = () =>{
         let serverExpensesUrl = serverUrl  + 'all_expenses?user_id=' + this.props.userID
         return fetch(serverExpensesUrl, {
           method: 'GET',
@@ -29,7 +30,7 @@ class HistoryPage extends React.Component {
 
     renderTable () {
         let content = []
-        console.log(this.state.mouthToAmount)
+        console.log(this.state.mouthToAmount != null)
         if (this.state.mouthToAmount)
         {
             console.log('this.state.mouthToAmount')
