@@ -104,7 +104,7 @@ class mysqlwrapper():
         return None
 
     @__configuration_required
-    def fetch_last_rows(self, tablename, user_id, row_number=None):
+    def fetch_last_rows(self, tablename, user_id, month=None, year=None, row_number=None):
         """fetches the last data from the table
 		function definition:
 		fetch_last(tablename)
@@ -112,7 +112,10 @@ class mysqlwrapper():
 		return_type: single dictionary (i.e row)
 		"""
         
-        query = 'select * from ' + tablename + ' WHERE '+  str(user_id) + ' = user_id and MONTH(ts) = MONTH(CURRENT_DATE()) AND YEAR(ts) = YEAR(CURRENT_DATE()) ORDER BY ts DESC '
+        filter=''
+        if month and year:
+            filter = 'AND MONTH(ts) = ' + str(month) + ' AND YEAR(ts) = ' + str(year)
+        query = 'select * from ' + tablename + ' WHERE '+  str(user_id) + ' = user_id ' + filter + ' ORDER BY ts DESC '
         print query
         if row_number:
             query += 'LIMIT ' +  str(row_number)

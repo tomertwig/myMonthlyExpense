@@ -62,17 +62,18 @@ def pay():
 @app.route('/expenses')
 def getLestExpenses():
     user_id = request.args.get('user_id', default=0, type=int)
+    now = datetime.now() 
 
+    month = 1
+    year = datetime.now().year
     data = []
     mountly_expenses = 0
     jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
 
-    fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id) or ()
+    fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
     permanent_index = len(fetched_mountly_data)
 
     fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
-
-    now = datetime.now() 
 
     fetched_data = fetched_mountly_data + fetched_permanent_data
     print('len(fetched_data')
@@ -138,6 +139,45 @@ def sign_in():
     
     db.insert(USERS_TABLE, ['user_name', 'password', 'user_id'], [user_name, password, user_id])  
     jsonResp = {'result': 'succeeded'}
+    return jsonify(jsonResp)
+
+def _month_year_iter():
+    start_month = 1
+    start_year = 2019
+    now = datetime.now() 
+
+    end_month = datetime.now().month
+    print end_month
+    end_year = datetime.now().year
+    ym_start= 12*start_year + start_month - 1
+
+
+    ym_end= 12*end_year + end_month - 1
+    print ym_end
+
+
+    for ym in range( ym_start, ym_end ):
+        y, m = divmod( ym, 12 )
+        yield m+1, y
+
+@app.route('/all_expenses')
+def all_expenses():
+    user_id = request.args.get('user_id')
+    result = []
+    now = datetime.now() 
+
+    for month, year in _month_year_iter():
+        fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
+        fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
+        mountly_expenses = 0
+        for d in fetched_mountly_data:
+            mountly_expenses += int(d[3])
+        
+        date = now.replace(month=month, year=year).strftime("%m-%y")
+        
+        result = [{'date': date, 'amount': mountly_expenses }] + result
+        
+    jsonResp = {'result': result}
     return jsonify(jsonResp)
 
 if __name__ == '__main__':

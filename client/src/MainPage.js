@@ -3,17 +3,6 @@ import $ from "jquery";
 import React, { Component } from 'react';
 import './App.css';
 
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
-//cookies.set('user_id', '2', { path: '/' });
-//console.log(cookies.get('user_id'));
-
-
-const hostName = window.location.hostname
-const serverPort = '5000'
-const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
-console.log(serverUrl)
 const SpenTypes = {
   1:'🛒 Supermarket',
   2:'🍺 Bar',
@@ -44,7 +33,9 @@ export default class App extends Component {
   constructor(props) {
     super()
     this.props = {
-      userID:props.userID
+      userID:props.userID,
+      serverUrl:props.serverUrl,
+      clientUrl:props.clientUrl
     }
     this.state = {
       displayAll: false,
@@ -61,7 +52,7 @@ export default class App extends Component {
 
   handlePay = () => {
     $('input').blur();
-    fetch(serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+
+    fetch(this.props.serverUrl + 'pay?user_id=' + this.props.userID +'&amount='+
     this.state.amount + '&spent_type=' + this.state.spentTypeKey +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
       method: 'GET',
       dataType: 'json'
@@ -91,7 +82,7 @@ export default class App extends Component {
   handleDeleteLatestTransaction = (idx) => {
     const deletePermenentExpense = idx != 0
     if (window.confirm("Are you sure you want to delete this transaction?")) {
-      fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&deletePermenentExpense='+deletePermenentExpense,{
+      fetch(this.props.serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&deletePermenentExpense='+deletePermenentExpense,{
         method: 'GET',
         dataType: 'json'
       }).then(() => {
@@ -111,7 +102,7 @@ export default class App extends Component {
   }
 
   getExpenses(displayAll){
-    let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + this.props.userID
+    let serverExpensesUrl = this.props.serverUrl  + 'expenses?user_id=' + this.props.userID
     return fetch(serverExpensesUrl, {
       method: 'GET',
       dataType: 'json',
@@ -249,11 +240,6 @@ handleKeyPressedForNumber= (e) => {
   }
 }
 
-onCalenderClicked = () => {
-  console.log('scrolllllll')
-}
-
-
 renderSelect(){
   console.log('renderSelect')
   console.log(this.state.filteredOptions)
@@ -280,7 +266,7 @@ renderSelect(){
 
   render() {
     return (
-      <div className="App">
+      <div>
       <div className="inputForm">
         {this.renderSelect()}
         <input type="number" pattern="[0-9]*"   className='inputLayout1' placeholder="Enter amount.." 
@@ -290,7 +276,7 @@ renderSelect(){
           {this.state.isMonthlyExpense ? 
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
-          <span className='checkboxLayout'onClick={()=>this.onCalenderClicked()}>📅 </span> 
+          <a className='Calender' href={this.props.clientUrl + 'history'}>📅</a>
         </div>
       </div>
       {this.renderExpensesTable()} 
