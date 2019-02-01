@@ -201,7 +201,6 @@ renderSelect(){
           {this.state.isMonthlyExpense ? 
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
-          <a className='Calender' href={clientUrl + 'history'}>📅</a>
         </div>
       </div>
       <MonthlyExpensesTable

@@ -24,7 +24,7 @@ export default class Auth extends Component {
     this.state = {
         userName:'',
         password:'',
-        userID
+        userID,
     }
   }
   
@@ -84,6 +84,21 @@ renderSignInPage() {
         </div>
         );
 }
+
+renderHomeButton()
+{
+    return(
+        <img className="iconButton" src={require('./home_icon.png')} width="42" height="42"/>
+    )
+}
+
+renderCalenderButton()
+{
+    return(
+        <img className="iconButton" src={require('./calender_icon3.png')} width="42" height="42"/>
+    )  
+}
+
 renderMonthExpensesTable()
 {
     const startMonth = 1
@@ -108,20 +123,47 @@ renderMonthExpensesTable()
         console.log('/history/'+month+'-'+year)
         console.log(ym)
         result.push(<Route key={ym} exact={true} path={'/history/'+month+'-'+year} render={() => (
-            <div className="App">
                   <MonthlyExpensesTable
                     userID={this.state.userID}
                     displayAll={true}
                     mounth={month} 
                     year={year}>
                   </MonthlyExpensesTable>
-            </div>
         )}/>)
       }
 
     return result;
 }
 
+
+renderHomeIcon()
+{
+    const isHomeActive = (window.location.href == clientUrl+'/' || window.location.href == clientUrl)
+    return (isHomeActive ? <a className={'active'}> <i> {this.renderHomeButton()}</i></a>:
+     <a href="/" ><i> {this.renderHomeButton()}</i></a> )
+}
+renderCalenderIcon()
+{
+    const isCalenderActive = window.location.href.includes(clientUrl+'history')
+
+    const isCalenderRef= (window.location.href != clientUrl+'history')
+    if (isCalenderActive)
+    {
+        if (isCalenderRef)
+        {
+            return  <a className={'active'} href={clientUrl + 'history'}> <i class="Calender"> {this.renderCalenderButton()}</i></a>
+        }
+        else
+        {
+            return  <a className={'active'}> <i class="Calender"> {this.renderCalenderButton()}</i></a>
+        }
+    }
+    else
+    {
+        return <a href={clientUrl + 'history'}><i> {this.renderCalenderButton()}</i></a>
+
+    }
+}
 render() {
 
     if (!this.state.userID)
@@ -135,20 +177,22 @@ render() {
     )}/>
 
     return (
-    <BrowserRouter>
-        <div>
-            <Route exact={true} path='/' render={() => (
-                <div className="App">
-                    <MainPage userID={this.state.userID}></MainPage>
-                </div>
-            )}/>
-            <Route exact={true} path='/history' render={() => (
-                <div className="App">
-                    <HistoryPage userID={this.state.userID} ></HistoryPage>
-                </div>
-            )}/>
-            {this.renderMonthExpensesTable()}
+    <div className="App">
+        <div class="icon-bar">
+        {this.renderHomeIcon()}
+        {this.renderCalenderIcon()}
         </div>
-    </BrowserRouter>)
+        <BrowserRouter>
+            <div>
+                <Route exact={true} path='/' render={() => (
+                        <MainPage userID={this.state.userID}></MainPage>
+                )}/>
+                <Route exact={true} path='/history' render={() => (
+                        <HistoryPage userID={this.state.userID} ></HistoryPage>
+                )}/>
+                {this.renderMonthExpensesTable()}
+            </div>
+        </BrowserRouter>
+    </div>)
   }
 }
