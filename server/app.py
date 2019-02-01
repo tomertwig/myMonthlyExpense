@@ -64,7 +64,7 @@ def getLestExpenses():
     user_id = request.args.get('user_id', default=0, type=int)
     now = datetime.now() 
 
-    month = 1
+    month = datetime.now().month
     year = datetime.now().year
     data = []
     mountly_expenses = 0
