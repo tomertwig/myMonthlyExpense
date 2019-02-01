@@ -169,8 +169,10 @@ def all_expenses():
     for month, year in _month_year_iter():
         fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
         fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
+        fetched_data = fetched_mountly_data + fetched_permanent_data
+
         mountly_expenses = 0
-        for d in fetched_mountly_data:
+        for d in fetched_data:
             mountly_expenses += int(d[3])
         
         date = now.replace(month=month, year=year).strftime("%m-%y")
