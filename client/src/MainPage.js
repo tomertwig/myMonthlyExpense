@@ -39,7 +39,6 @@ export default class App extends Component {
       userID:props.userID,
     }
     this.state = {
-      displayAll: false,
       isMonthlyExpense: false,
       spentTypeKey: -1,
       filteredOptions: {},
@@ -64,15 +63,7 @@ export default class App extends Component {
     })
   }
 
-  handleDisplayAll(){
-    console.log('handleDisplayAll')
-    this.setState({displayAll:true})
-  }
 
-  handleShowLess(){
-    console.log('handleShowLess')
-    this.setState({displayAll:false})
-  }  
   
   handleSpentTypeChanged = (key) => {
     console.log('handleSpentTypeChanged')
@@ -205,13 +196,10 @@ renderSelect(){
       </div>
       <MonthlyExpensesTable
        userID={this.props.userID}
-       displayAll={this.state.displayAll}
        mounth={mm}
        year={yyyy}
        writePermissions={true}>
       </MonthlyExpensesTable>
-      {this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
-      <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>}
       </div>
     );
   }

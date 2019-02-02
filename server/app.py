@@ -75,7 +75,8 @@ def getLestExpenses():
 
     data = []
     mountly_expenses = 0
-    jsonResp = {'expenses': data, 'expensesSum': mountly_expenses}
+    one_time_expenses = 0
+    jsonResp = {'expenses': data, 'oneTimeExpenses':one_time_expenses, 'monthlyExpenses': mountly_expenses}
     print user_id
 
     fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
@@ -92,14 +93,15 @@ def getLestExpenses():
         for d in fetched_data:
             if i >= len(fetched_mountly_data):
                 data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
+                mountly_expenses += int(d[3])   
             else:
                 data.append([d[0].strftime("%d-%m"), d[2], d[3]])
-            
-            mountly_expenses += int(d[3])
+                one_time_expenses += int(d[3])
+         
             i += 1
 
-
-        jsonResp = {'expenses': data, 'expensesSum': mountly_expenses, 'permanentIndex':permanent_index}
+        jsonResp = {'expenses': data, 'oneTimeExpenses': one_time_expenses,
+                    'monthlyExpenses':mountly_expenses,   'permanentIndex':permanent_index}
     return jsonify(jsonResp)
 
 @app.route('/login')

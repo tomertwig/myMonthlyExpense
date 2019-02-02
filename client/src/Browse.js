@@ -151,11 +151,11 @@ renderCalenderIcon()
     {
         if (isCalenderRef)
         {
-            return  <a className={'active'} href={clientUrl + 'history'}> <i class="Calender"> {this.renderCalenderButton()}</i></a>
+            return  <a className={'active'} href={clientUrl + 'history'}> <i className="Calender"> {this.renderCalenderButton()}</i></a>
         }
         else
         {
-            return  <a className={'active'}> <i class="Calender"> {this.renderCalenderButton()}</i></a>
+            return  <a className={'active'}> <i className="Calender"> {this.renderCalenderButton()}</i></a>
         }
     }
     else
@@ -178,7 +178,7 @@ render() {
 
     return (
     <div className="App">
-        <div class="icon-bar">
+        <div className="icon-bar">
         {this.renderHomeIcon()}
         {this.renderCalenderIcon()}
         </div>
