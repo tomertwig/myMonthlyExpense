@@ -186,7 +186,7 @@ class MonthlyExpensesTable extends React.Component {
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                <th>On-Time</th>
+                <th>One-Time</th>
                 <th>Monthly</th>
                 <th>Total</th>
                 </tr>
