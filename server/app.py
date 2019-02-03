@@ -6,6 +6,7 @@ import mysql.connector
 from sqlwrapper import mysqlwrapper
 import random
 from datetime import datetime
+import os
 
 DATABASE = 'test123'
 app = Flask(__name__)
@@ -59,10 +60,22 @@ def pay():
     jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
 
+def _db_heartbeat():
+    try:
+      print '_db_heartbeat'
+
+      db.fetch_first(EXPENSES_TABLE)
+    except Exception as e:
+        print 'heartbeat failed, run docker-compose kill & up'
+        cmd = 'docker-compose kill && docker-compose up'
+        os.system(cmd)
+
+
 @app.route('/expenses')
 def getLestExpenses():
     print 'getLestExpenses'
-
+    _db_heartbeat()
+    
     user_id = request.args.get('user_id', default=0, type=int)
     month = request.args.get('month', default=0, type=int)
     year = request.args.get('year', default=0, type=int)
