@@ -265,7 +265,8 @@ margin-right: auto;
 
 .icon-bar {
   width: 100%;
-  background-color: rgb(163, 161, 161);
+  background-color: rgb(126, 128, 119);
+
   overflow: auto;
 }
 
@@ -281,7 +282,7 @@ margin-right: auto;
 
 
 .active {
-  background-color: rgb(202, 235, 86);
+  background-color: rgb(99, 184, 241);
 }
 
 .googlechart{

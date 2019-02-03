@@ -8,7 +8,6 @@ class MonthlyExpensesTable extends React.Component {
     constructor(props) {
         super()
         this.props = {
-
             userID:props.userID,
             mounth:props.mounth,
             year:props.year,
@@ -68,15 +67,16 @@ class MonthlyExpensesTable extends React.Component {
         .catch(err => console.log(err))
     }
     
-    onChartClicked = () =>{
-        this.setState({chart:true})
+    onChartClicked = (disaplayOneTimeExpenses) =>{
+        this.setState({chart:true, disaplayOneTimeExpenses})
     }
     
 
     renderChart(){
         const expenses = this.state.expenses
         const sumup = {}
-        for (let i = 0; i < expenses.length; i++)
+        const expensesIndex = this.state.disaplayOneTimeExpenses ? this.state.permanentIndex : expenses.length
+        for (let i = 0; i < expensesIndex; i++)
         {   
             const key = expenses[i][1];
             if (! (SpenTypes[key] in sumup)){
@@ -145,9 +145,7 @@ class MonthlyExpensesTable extends React.Component {
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Type
-                    <span className='chartIcon' onClick={() => this.onChartClicked()}>📊</span> 
-                </th>
+                <th>Type</th>
                 <th>Expense</th>
               </tr>
             </thead>
@@ -186,9 +184,13 @@ class MonthlyExpensesTable extends React.Component {
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                <th>One-Time</th>
-                <th>Monthly</th>
-                <th>Total</th>
+                <th onClick={() => this.onChartClicked(true)}>One-Time  
+                   <span className='chartIcon'>📊</span> 
+                </th>
+                <th>Monthly </th>
+                <th onClick={() => this.onChartClicked(false)}>Total
+                    <span className='chartIcon'>📊</span> 
+                </th>
                 </tr>
             </thead>
             <tbody>
