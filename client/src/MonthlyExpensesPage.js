@@ -163,8 +163,8 @@ class MonthlyExpensesPage extends React.Component {
         {
             return (
                 <div>  
-                <button className='chartButtons'>Table</button>
-                <button  className='chartButtons chartButtons_active'onClick={()=>this.handleChartTypeClick(ChartType.Pai)}> Pai</button>
+                <button disabled className='chartButtons'>Table</button>
+                <button  className='chartButtons chartButtons_active'onClick={()=>this.handleChartTypeClick(ChartType.Pai)}> Chart</button>
                 {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
                 </div>
             )
@@ -174,7 +174,7 @@ class MonthlyExpensesPage extends React.Component {
             return (
                 <div>  
                 <button className='chartButtons chartButtons_active' onClick={()=>{this.handleChartTypeClick(ChartType.Table)}}>Table</button>
-                <button  className='chartButtons'> Pai</button>
+                <button disabled className='chartButtons'> Chart</button>
                 {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
                 </div>
             )

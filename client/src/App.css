@@ -343,3 +343,8 @@ margin-right: auto;
   box-shadow: inset 0px 0px 5px #c1c1c1;
   outline: none;
 }
+
+.chartButtons:active {
+  box-shadow: 0 3px #666;
+  transform: translateY(1px);
+}
