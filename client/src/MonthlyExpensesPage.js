@@ -225,9 +225,10 @@ class MonthlyExpensesPage extends React.Component {
             </thead>
             <tbody>
                 <tr>
-                <td>{this.state.oneTimeExpensesSum}</td>
-                <td> {this.state.monthlyExpensesSum}</td>
-                <td>{this.state.oneTimeExpensesSum + this.state.monthlyExpensesSum}</td>
+                {this.state.activeTab != ActiveTab.OneTime || this.state.chart ? <td onClick={() => this.onMonthlyClicked(false)}>{this.state.oneTimeExpensesSum}</td> :
+                <td onClick={() => this.onChartClicked(true)}>{this.state.oneTimeExpensesSum}</td>}
+                <td onClick={() => this.onMonthlyClicked(true)} > {this.state.monthlyExpensesSum}</td>
+                <td onClick={() => this.onChartClicked(false)} >{this.state.oneTimeExpensesSum + this.state.monthlyExpensesSum}</td>
                 </tr>
             </tbody>
         </table>)

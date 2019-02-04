@@ -86,8 +86,12 @@ def getLestExpenses():
     fetched_mountly_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
 
     for d in fetched_mountly_data:
-        monthly_expenses_data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
-        mountly_expenses_sum += int(d[3])   
+        fetched_month = int(d[0].strftime("%m"))
+        fetched_year = int(d[0].strftime("%Y"))
+
+        if fetched_year < year or (fetched_year == year and fetched_month <= month):
+            monthly_expenses_data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
+            mountly_expenses_sum += int(d[3])  
     
     for d in fetched_one_time_data:
         one_time_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
@@ -178,12 +182,18 @@ def all_expenses():
         print month
 
         fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
-        fetched_data = fetched_mountly_data + fetched_permanent_data
 
         mountly_expenses = 0
-        for d in fetched_data:
+        for d in fetched_mountly_data:
             mountly_expenses += int(d[3])
-        
+
+        for d in fetched_permanent_data:
+            fetched_month = int(d[0].strftime("%m"))
+            fetched_year = int(d[0].strftime("%Y"))
+
+            if fetched_year < year or (fetched_year == year and fetched_month <= month):
+                mountly_expenses += int(d[3])  
+                
         date = now.replace(month=month, year=year).strftime("%m-%Y")
         print result
         result = [{'date': date, 'amount': mountly_expenses }] + result
