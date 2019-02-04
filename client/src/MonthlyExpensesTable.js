@@ -44,10 +44,10 @@ class MonthlyExpensesTable extends React.Component {
 
     renderArrow(){
         if (!this.props.isOneTimeExpenses){
-            return;
+            return  <span className="arrow"> </span>;
         }
-        return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
-        <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>)
+        return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}></span> :
+        <span className="arrow" onClick={() => this.handleDisplayAll()}></span>)
     }
     renderTable(){
        const expenses = this.props.expenses

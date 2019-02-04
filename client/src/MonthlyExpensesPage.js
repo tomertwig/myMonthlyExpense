@@ -1,11 +1,10 @@
 import React from  'react'
 import './App.css';
-import {SpenTypes} from './MainPage'
+import {SpenTypes, ActiveTab} from './MainPage'
 import {serverUrl} from './Browse'
 import { Chart } from "react-google-charts";
 import MonthlyExpensesTable from './MonthlyExpensesTable'
 
-const ActiveTab = {OneTime:0, Monthly:1, Total:2}
 const ChartType = {Table:0, Pai:1}
 
 class MonthlyExpensesPage extends React.Component {
@@ -18,15 +17,27 @@ class MonthlyExpensesPage extends React.Component {
             writePermissions:props.writePermissions,
             chart:false,
         }
+
         this.state = {
             monthlyExpensesData:[],
             oneTimeExpensesData:[],
             monthlyExpenses:0,
             oneTimeExpenses:0,
             chartType:ChartType.Table,
-            activeTab:ActiveTab.OneTime,
+            activeTab:ActiveTab.OneTime
         }
 
+        this.fetchExpenses()
+    }
+
+    componentWillReceiveProps(props)
+    {
+        console.log('componentWillReceiveProps')
+
+        console.log(props.activeTab)
+        this.setState({
+            activeTab:props.activeTab
+        })
         this.fetchExpenses()
     }
 

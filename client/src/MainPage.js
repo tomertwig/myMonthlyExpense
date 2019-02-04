@@ -29,6 +29,9 @@ export const SpenTypes = {
   100:'❓ Other',
 }
 
+export const ActiveTab = {OneTime:0, Monthly:1, Total:2}
+
+
 export default class App extends Component {
   
 
@@ -42,6 +45,7 @@ export default class App extends Component {
       spentTypeKey: -1,
       filteredOptions: {},
       textValue:'',
+      activeTab: ActiveTab.OneTime
     }
   }
 
@@ -61,19 +65,15 @@ export default class App extends Component {
       }
     })
   }
-
-
   
   handleSpentTypeChanged = (key) => {
-    console.log('handleSpentTypeChanged')
-
-    console.log(key)
     this.setState({spentTypeKey: key});
   }
 
   handleCheck = () => { 
     const isMonthlyExpense = !this.state.isMonthlyExpense
-    this.setState({isMonthlyExpense});
+    const activeTab = isMonthlyExpense ? ActiveTab.Monthly : ActiveTab.OneTime 
+    this.setState({isMonthlyExpense, activeTab});
   }
 
   handleAmountChanged = (e) => {    
@@ -81,7 +81,6 @@ export default class App extends Component {
   }
 
 updateFilter = (evt) => {
-  console.log('updateFilter')
   $(".DataListOption:first-child").css("background-color", "#D0E4F5");
 
    let value = '';
@@ -104,7 +103,6 @@ updateFilter = (evt) => {
 }
 
 handleClick = (key) => {
-  console.log(key)
   this.handleSpentTypeChanged(key)
   this.setState({textValue: this.state.filteredOptions[key]})
   this.hideList();
@@ -124,19 +122,12 @@ hideList() { // whe we click that name after by this function the list hide.
 }
 
 handleKeyPressedForList = (e) => {
-  console.log(e)
 
   if (e.key === 'Enter') {
-    console.log(this.state.filteredOptions)
     var filteredOptionsKeys = Object.keys(this.state.filteredOptions)
 
     if (filteredOptionsKeys.length >0)
     {
-
-      console.log('this.state.filteredOptions')
-
-      console.log(filteredOptionsKeys[0])
-
       this.handleClick(filteredOptionsKeys[0])
       $('input').focus();
 
@@ -145,15 +136,13 @@ handleKeyPressedForList = (e) => {
 }
 
 handleKeyPressedForNumber= (e) => {
-  console.log(e)
   if (e.key === 'Enter') {
       $('input').blur();
   }
 }
 
 renderSelect(){
-  console.log('renderSelect')
-  console.log(this.state.filteredOptions)
+
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
       return (<div className='DataListOption' data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
@@ -196,7 +185,8 @@ renderSelect(){
        userID={this.props.userID}
        mounth={mm}
        year={yyyy}
-       writePermissions={true}>
+       writePermissions={true}
+       activeTab={this.state.activeTab}>
       </MonthlyExpensesPage>
       </div>
     );
