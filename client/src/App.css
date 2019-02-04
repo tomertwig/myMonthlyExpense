@@ -203,8 +203,8 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 }
 .arrow{
   font-size: 30px;
-  margin: -28px;
-  margin-left: 2%;
+  margin: -33px;
+  margin-bottom: 14px;
 }
 
 @keyframes App-logo-spin {
