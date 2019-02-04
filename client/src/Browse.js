@@ -3,7 +3,9 @@ import './App.css';
 import Cookies from 'universal-cookie';
 import { BrowserRouter, Route} from 'react-router-dom';
 import HistoryPage from './HistoryPage';
-import MonthlyExpensesTable from './MonthlyExpensesTable';
+import $ from "jquery";
+
+import MonthlyExpensesPage from './MonthlyExpensesPage';
 import MainPage from './MainPage';
 var SHA256 = require("crypto-js/sha256");
 const hostName = window.location.hostname
@@ -72,13 +74,18 @@ export default class Auth extends Component {
   }
 
 renderSignInPage() {
+
+    $("body").css("background-color", "#61dafb");
+
     return (
         <div className="App">
             <div className="inputForm">
-                <input type="text"  placeholder="user name.." value={this.state.userName} onChange={this.handleUserName} />
-                <input type="password"  placeholder="password.." value={this.state.password} onChange={this.handlePassword} />
-            <button onClick={() => this.handleLogin()}> <div className='payText' >Login </div></button>
-            <button onClick={() => this.handleSignIn()}> <div className='payText' >Sign-in </div></button>
+                <div className="inputForm1">
+                <input  className="LoginButton" type="text"  placeholder="User name.." value={this.state.userName} onChange={this.handleUserName} />
+                <input  className="LoginButton" type="password"  placeholder="Password.." value={this.state.password} onChange={this.handlePassword} />
+                <button className="SignInButton" onClick={() => this.handleLogin()}> <div>Login </div></button>
+                <button className="SignInButton" onClick={() => this.handleSignIn()}> <div> Sign-in </div></button>
+                </div>
 
             </div>
         </div>
@@ -123,12 +130,11 @@ renderMonthExpensesTable()
         console.log('/history/'+month+'-'+year)
         console.log(ym)
         result.push(<Route key={ym} exact={true} path={'/history/'+month+'-'+year} render={() => (
-                  <MonthlyExpensesTable
+                  <MonthlyExpensesPage
                     userID={this.state.userID}
-                    displayAll={true}
                     mounth={month} 
                     year={year}>
-                  </MonthlyExpensesTable>
+                  </MonthlyExpensesPage>
         )}/>)
       }
 
@@ -170,6 +176,8 @@ render() {
     {
         return this.renderSignInPage();
     }
+    $("body").css("background-color", "#f1f1f1");
+
     <Route exact={true} path='/history/01-2019' render={() => (
         <div className="App">
             <HistoryPage userID={this.state.userID}></HistoryPage>

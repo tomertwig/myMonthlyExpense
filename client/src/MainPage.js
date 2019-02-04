@@ -2,9 +2,8 @@
 import $ from "jquery";
 import React, { Component } from 'react';
 import './App.css';
-import MonthlyExpensesTable from "./MonthlyExpensesTable";
+import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import {serverUrl} from './Browse'
-import {clientUrl} from './Browse'
 
 export const SpenTypes = {
   1:'🛒 Supermarket',
@@ -194,12 +193,12 @@ renderSelect(){
           <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
         </div>
       </div>
-      <MonthlyExpensesTable
+      <MonthlyExpensesPage
        userID={this.props.userID}
        mounth={mm}
        year={yyyy}
        writePermissions={true}>
-      </MonthlyExpensesTable>
+      </MonthlyExpensesPage>
       </div>
     );
   }

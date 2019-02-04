@@ -29,27 +29,21 @@ db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)'
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
     user_id = request.args.get('user_id', default=0, type=int)
-    deletePermenentExpense = request.args.get('deletePermenentExpense') == 'true'
-    table = MONTHLY_EXPENSES_TABLE if deletePermenentExpense else EXPENSES_TABLE
+    isOneTimeExpenses = request.args.get('isOneTimeExpenses') == 'true'
+    table = EXPENSES_TABLE if isOneTimeExpenses else MONTHLY_EXPENSES_TABLE
     db.delete_latest_transaction(table, user_id)
     return ''
 
 
 @app.route('/pay')
 def pay():
-    print 'pay !!!! '
     user_id = request.args.get('user_id', default=0, type=int)
     amount = request.args.get('amount', default=0, type=int)
     spent_type = request.args.get('spent_type', default=0, type=int)
     is_monthly_expense = request.args.get('is_monthly_expense') == 'true'
-    print 'is_monthly_expense'
-    print is_monthly_expense
+
 
     if amount <= 0 or spent_type == 0:
-        print user_id
-        print amount
-        print spent_type
-
         print 'failed pay !!!! '
         jsonResp = {'result': 'failed'}
         return jsonify(jsonResp)
@@ -70,48 +64,38 @@ def _db_heartbeat():
 
 @app.route('/expenses')
 def getLestExpenses():
-    print 'getLestExpenses'
+    print 'expenses'
     _db_heartbeat()
 
     user_id = request.args.get('user_id', default=0, type=int)
     month = request.args.get('month', default=0, type=int)
     year = request.args.get('year', default=0, type=int)
 
-    print month
-    print year
-
     now = datetime.now() 
 
+    monthly_expenses_data =[]
+    one_time_data =[]
+    mountly_expenses_sum = 0
+    one_time_expenses_sum = 0
 
-    data = []
-    mountly_expenses = 0
-    one_time_expenses = 0
-    jsonResp = {'expenses': data, 'oneTimeExpenses':one_time_expenses, 'monthlyExpenses': mountly_expenses}
-    print user_id
+    jsonResp = {'monthlyExpensesData':monthly_expenses_data, 'monthlyExpensesSum':mountly_expenses_sum,
+     'oneTimeExpensesData': one_time_data,
+     'oneTimeExpensesSum': one_time_expenses_sum}
 
-    fetched_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
-    permanent_index = len(fetched_mountly_data)
+    fetched_one_time_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
+    fetched_mountly_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
 
-    fetched_permanent_data = db.fetch_last_rows(MONTHLY_EXPENSES_TABLE, user_id) or ()
-
-    fetched_data = fetched_mountly_data + fetched_permanent_data
-    print('len(fetched_data')
-
-    print(len(fetched_data))
-    if fetched_data:
-        i = 0
-        for d in fetched_data:
-            if i >= len(fetched_mountly_data):
-                data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
-                mountly_expenses += int(d[3])   
-            else:
-                data.append([d[0].strftime("%d-%m"), d[2], d[3]])
-                one_time_expenses += int(d[3])
-         
-            i += 1
-
-        jsonResp = {'expenses': data, 'oneTimeExpenses': one_time_expenses,
-                    'monthlyExpenses':mountly_expenses,   'permanentIndex':permanent_index}
+    for d in fetched_mountly_data:
+        monthly_expenses_data.append([now.replace(day=1, month=month).strftime("%d-%m"), d[2], d[3]])
+        mountly_expenses_sum += int(d[3])   
+    
+    for d in fetched_one_time_data:
+        one_time_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
+        one_time_expenses_sum += int(d[3])
+        
+    jsonResp = {'monthlyExpensesData':monthly_expenses_data, 'monthlyExpensesSum':mountly_expenses_sum,
+     'oneTimeExpensesData': one_time_data,
+     'oneTimeExpensesSum': one_time_expenses_sum}
     return jsonify(jsonResp)
 
 @app.route('/login')
