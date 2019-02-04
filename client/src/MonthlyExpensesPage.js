@@ -6,6 +6,7 @@ import { Chart } from "react-google-charts";
 import MonthlyExpensesTable from './MonthlyExpensesTable'
 
 const ActiveTab = {OneTime:0, Monthly:1, Total:2}
+const ChartType = {Table:0, Pai:1}
 
 class MonthlyExpensesPage extends React.Component {
     constructor(props) {
@@ -16,13 +17,14 @@ class MonthlyExpensesPage extends React.Component {
             year:props.year,
             writePermissions:props.writePermissions,
             chart:false,
-            activeTab:ActiveTab.OneTime
+            activeTab:ActiveTab.OneTime,
         }
         this.state = {
             monthlyExpensesData:[],
             oneTimeExpensesData:[],
             monthlyExpenses:0,
             oneTimeExpenses:0,
+            chartType:ChartType.Table
         }
 
         this.fetchExpenses()
@@ -63,24 +65,13 @@ class MonthlyExpensesPage extends React.Component {
         this.setState({chart:false, activeTab})
     }
 
-    renderChart(){
-        const sumup = {}
-        const expenses = this.state.disaplayOneTimeExpenses ? this.state.oneTimeExpensesData :  this.state.monthlyExpensesData
-        for (let i = 0; i < expenses.length; i++)
-        {   
-            const key = expenses[i][1];
-            if (! (SpenTypes[key] in sumup)){
-                sumup[SpenTypes[key]] = 0
-            }
-            sumup[SpenTypes[key]] += expenses[i][2]
-        }
+    handleChartTypeClick = (chartType) =>{
+        this.setState({'chartType':chartType})
+    }
 
-        const data = [['Task', 'Hours per Day']]
-        for (let key in sumup)
-        {
-            data.push([key, sumup[key]])
-        }
-        
+    renderPaiChart = (data)=>
+    {
+
         const pieOptions = {
             title: "",
             legend: {
@@ -105,15 +96,91 @@ class MonthlyExpensesPage extends React.Component {
             fontName: "Roboto"
           };
         console.log(data)
-       return (<Chart
-        chartType="PieChart"
-        data={data}
-        options={pieOptions}
-        graph_id="PieChart"
-        width={"100%"}
-        height={"300px"}
-        legend_toggle
-      />)
+       return (
+        <Chart
+            chartType="PieChart"
+            data={data}
+            options={pieOptions}
+            graph_id="PieChart"
+            width={"100%"}
+            height={"300px"}
+            legend_toggle
+        />
+      )
+    }
+
+    renderTableChart = (data) => {
+        console.log('data.shift()')
+        console.log(data.shift())
+
+        console.log(data)
+
+
+        data.sort(function(a,b){return a[1]<b[1];});
+        return( <table className='paleBlueRows'>
+         <thead>
+           <tr>
+             <th>Type</th>
+             <th>Total Expense</th>
+           </tr>
+         </thead>
+         <tbody>
+         {
+         data.map((element, idx) => {
+             console.log(idx)
+             console.log(element)
+            return  (<tr key={idx}>
+                    <td className='spentType'>{data[idx][0]} </td>
+                    <td>{data[idx][1]}</td>
+                    </tr>)
+         })
+         
+         }
+        </tbody>
+        </table>)
+    }
+    
+    renderChart(){
+        const sumup = {}
+        const expenses = this.state.disaplayOneTimeExpenses ? this.state.oneTimeExpensesData :  this.state.monthlyExpensesData
+        for (let i = 0; i < expenses.length; i++)
+        {   
+            const key = expenses[i][1];
+            if (! (SpenTypes[key] in sumup)){
+                sumup[SpenTypes[key]] = 0
+            }
+            sumup[SpenTypes[key]] += expenses[i][2]
+        }
+
+        const data = [['Task', 'Hours per Day']]
+        for (let key in sumup)
+        {
+            data.push([key, sumup[key]])
+        }
+
+        console.log(this.state.chartType )
+        if (this.state.chartType == ChartType.Table)
+        {
+            return (
+                <div>  
+                <button className='chartButtons'>Table</button>
+                <button  className='chartButtons chartButtons_active'onClick={()=>this.handleChartTypeClick(ChartType.Pai)}> Pai</button>
+                {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
+                </div>
+            )
+        }
+        else
+        {
+            return (
+                <div>  
+                <button className='chartButtons chartButtons_active' onClick={()=>{this.handleChartTypeClick(ChartType.Table)}}>Table</button>
+                <button  className='chartButtons'> Pai</button>
+                {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
+                </div>
+            )
+        }
+
+
     }
     
 
@@ -122,9 +189,9 @@ class MonthlyExpensesPage extends React.Component {
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                {this.state.chart ? <th onClick={() => this.onMonthlyClicked(false)}>One-Time <span className='chartIcon'>📈 </span> </th> :
+                {this.state.chart ? <th onClick={() => this.onMonthlyClicked(false)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
                 <th onClick={() => this.onChartClicked(true)}>One-Time <span className='chartIcon'>📊 </span> </th>}
-                <th onClick={() => this.onMonthlyClicked(true)}> Monthly <span className='chartIcon'>📈 </span> </th>
+                <th onClick={() => this.onMonthlyClicked(true)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
                 <th onClick={() => this.onChartClicked(false)}>Total
                     <span className='chartIcon'>📊</span> 
                 </th>
@@ -187,7 +254,6 @@ class MonthlyExpensesPage extends React.Component {
             {this.renderSumupTable()}
             { <div className='tableHeadline'> {headline} </div>}
             {this.state.chart ? this.renderChart() : this.renderTables()}
-
         </div>
         )
 

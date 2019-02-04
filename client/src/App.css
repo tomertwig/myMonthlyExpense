@@ -326,3 +326,20 @@ margin-right: auto;
   font-weight: bold;
 
 }
+
+.chartButtons {
+  background: #ededed;
+  border: 1px solid #ccc;
+  padding: 8px 18px;
+  margin: 10px;
+  font-size:14px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.chartButtons_active {
+  background: #e5e5e5;
+  border: 1px solid black;
+  box-shadow: inset 0px 0px 5px #c1c1c1;
+  outline: none;
+}
