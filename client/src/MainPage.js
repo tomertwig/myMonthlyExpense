@@ -57,7 +57,7 @@ export default class App extends Component {
       dataType: 'json'
     }).then(r => r.json())
       .then((json) => {
-        this.setState({textValue:'', spentTypeKey: -1, amount:''})
+        this.setState({textValue:'', spentTypeKey: -1, amount:'', isChart:false})
       if (json.result === 'failed')
       {
         alert("Invalid Input");
@@ -186,7 +186,8 @@ renderSelect(){
        mounth={mm}
        year={yyyy}
        writePermissions={true}
-       activeTab={this.state.activeTab}>
+       activeTab={this.state.activeTab}
+       chart={this.state.isChart}>
       </MonthlyExpensesPage>
       </div>
     );

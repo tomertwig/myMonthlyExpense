@@ -36,7 +36,8 @@ class MonthlyExpensesPage extends React.Component {
 
         console.log(props.activeTab)
         this.setState({
-            activeTab:props.activeTab
+            activeTab:props.activeTab,
+            chart: props.chart
         })
         this.fetchExpenses()
     }
@@ -153,7 +154,18 @@ class MonthlyExpensesPage extends React.Component {
     
     renderChart(){
         const sumup = {}
-        const expenses = this.state.disaplayOneTimeExpenses ? this.state.oneTimeExpensesData :  this.state.monthlyExpensesData
+        let expenses
+        switch (this.state.activeTab){
+            case ActiveTab.OneTime: 
+                expenses = this.state.oneTimeExpensesData 
+                break;
+            case ActiveTab.Monthly: 
+                expenses = this.state.monthlyExpensesData;
+                break;
+            case ActiveTab.Total:
+                expenses = this.state.oneTimeExpensesData.concat(this.state.monthlyExpensesData)
+                break;             
+        }
         for (let i = 0; i < expenses.length; i++)
         {   
             const key = expenses[i][1];
@@ -180,7 +192,7 @@ class MonthlyExpensesPage extends React.Component {
                 </div>
             )
         }
-        else
+        else //chart
         {
             return (
                 <div>  
@@ -224,24 +236,27 @@ class MonthlyExpensesPage extends React.Component {
 
     renderTables()
     {  
+        let expenses
+        switch (this.state.activeTab){
+            case ActiveTab.OneTime: 
+                expenses = this.state.oneTimeExpensesData 
+                break;
+            case ActiveTab.Monthly: 
+                expenses = this.state.monthlyExpensesData;
+                break;
+            case ActiveTab.Total:
+                expenses = this.state.oneTimeExpensesData.concat(this.state.monthlyExpensesData)
+                break;             
+        }
+
         return( 
-            <div>          
-                {this.state.activeTab == ActiveTab.Monthly ? 
                 <MonthlyExpensesTable
                  userID={this.props.userID}
-                 expenses={this.state.monthlyExpensesData}
+                 expenses={expenses}
                  writePermissions={this.props.writePermissions}
-                 isOneTimeExpenses={false}
+                 isOneTimeExpenses={this.state.activeTab != ActiveTab.Monthly}
                  fetchExpensesCallback={this.fetchExpenses}>
-                 </MonthlyExpensesTable> :
-                <MonthlyExpensesTable 
-                userID={this.props.userID}
-                expenses={this.state.oneTimeExpensesData}
-                writePermissions={this.props.writePermissions}
-                isOneTimeExpenses={true}
-                fetchExpensesCallback={this.fetchExpenses}>
-                </MonthlyExpensesTable>}
-            </div>
+                 </MonthlyExpensesTable> 
         )
     }
 

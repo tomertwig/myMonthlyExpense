@@ -26,6 +26,8 @@ table.paleBlueRows {
   margin-left: auto;
   margin-right: auto;
   margin-top: 10px;
+  margin-bottom: 40px;
+
   font-family: "Times New Roman", Times, serif;
   border: 1px solid #FFFFFF;
   width: 93%;
@@ -195,9 +197,14 @@ a:visited{ color: blue }
 }
 tr:nth-child(even) {background-color: #f2f2f2;}
 
+.tableWithArrow{
+  display: flex;
+  flex-direction: column;
+}
 .arrow{
   font-size: 30px;
-  margin-left: 5%;
+  margin: -28px;
+  margin-left: 2%;
 }
 
 @keyframes App-logo-spin {

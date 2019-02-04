@@ -18,7 +18,6 @@ class MonthlyExpensesTable extends React.Component {
         }
     }
 
-
     handleDeleteLatestTransaction = (isOneTimeExpenses) => {
 
         if (window.confirm("Are you sure you want to delete this transaction?")) {
@@ -44,10 +43,10 @@ class MonthlyExpensesTable extends React.Component {
 
     renderArrow(){
         if (!this.props.isOneTimeExpenses){
-            return  <span className="arrow"> </span>;
+            return;
         }
-        return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}></span> :
-        <span className="arrow" onClick={() => this.handleDisplayAll()}></span>)
+        return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
+        <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>)
     }
     renderTable(){
        const expenses = this.props.expenses
@@ -88,7 +87,7 @@ class MonthlyExpensesTable extends React.Component {
 
     render(){
         return (
-            <div>
+            <div className='tableWithArrow'>
             {this.renderTable()}
             {this.renderArrow()}
            </div>
