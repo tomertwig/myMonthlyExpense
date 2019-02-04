@@ -17,14 +17,14 @@ class MonthlyExpensesPage extends React.Component {
             year:props.year,
             writePermissions:props.writePermissions,
             chart:false,
-            activeTab:ActiveTab.OneTime,
         }
         this.state = {
             monthlyExpensesData:[],
             oneTimeExpensesData:[],
             monthlyExpenses:0,
             oneTimeExpenses:0,
-            chartType:ChartType.Table
+            chartType:ChartType.Table,
+            activeTab:ActiveTab.OneTime,
         }
 
         this.fetchExpenses()
@@ -185,11 +185,14 @@ class MonthlyExpensesPage extends React.Component {
     
 
     renderSumupTable(){
+        console.log('this.state.activeTab')
+
+        console.log(this.state.activeTab)
         return (
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                {this.state.chart ? <th onClick={() => this.onMonthlyClicked(false)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
+                {this.state.activeTab != ActiveTab.OneTime || this.state.chart ? <th onClick={() => this.onMonthlyClicked(false)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
                 <th onClick={() => this.onChartClicked(true)}>One-Time <span className='chartIcon'>📊 </span> </th>}
                 <th onClick={() => this.onMonthlyClicked(true)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
                 <th onClick={() => this.onChartClicked(false)}>Total

@@ -149,6 +149,10 @@ table.paleBlueRows tbody td.spentType{
   padding:10px;
   font-size:14px;
 }
+.inputButton:active {
+  box-shadow: 0 3px #666;
+  transform: translateY(1px);
+}
 
 .paymentButtons{
   display: flex;
