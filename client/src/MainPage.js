@@ -155,8 +155,7 @@ renderSelect(){
   console.log('renderSelect')
   console.log(this.state.filteredOptions)
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
-      const dsClassName = index == 0? 'DataListOption': 'DataListOption';
-      return (<div className={dsClassName} data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
+      return (<div className='DataListOption' data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
 
 
@@ -182,7 +181,7 @@ renderSelect(){
 
     return (
       <div>
-      <div className="inputForm">
+      <div className="inputMainPageForm">
         {this.renderSelect()}
         <input type="number" pattern="[0-9]*"   className='inputLayout1' placeholder="Enter amount.." 
           value={this.state.amount} onChange={this.handleAmountChanged} onKeyPress={this.handleKeyPressedForNumber} />

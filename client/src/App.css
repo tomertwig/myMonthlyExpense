@@ -64,6 +64,7 @@ table.paleBlueRows thead th:first-child {
   border-left: none;
 }
 
+
 table.paleBlueRows tfoot {
   font-size: 14px;
   font-weight: bold;
@@ -98,6 +99,13 @@ table.paleBlueRows tbody td.spentType{
   margin-right: 10%;
 }
 
+.inputMainPageForm{
+  display: flex;
+  flex-direction: column;
+  margin-left: 15%;
+  margin-top: 5%;
+}
+
 .inputForm1{
   display: flex;
   flex-direction: column;
@@ -113,10 +121,16 @@ table.paleBlueRows tbody td.spentType{
 }
 
 .inputLayout1{
-  width: 80%;
+  width: 75%;
   height: 30px;
-  margin:2px;
-  font-size:15px;
+  margin-top:10px;
+  font-size:16px;
+  border:  1px solid ;
+}
+
+.dropdown {
+  position: relative;
+  display: flex;
 }
 
 .inputSelectLayout{
@@ -139,6 +153,7 @@ table.paleBlueRows tbody td.spentType{
 .paymentButtons{
   display: flex;
   flex-direction: row;
+  margin-top: 12px;
 
 }
 .endLayout{
@@ -175,11 +190,12 @@ a:visited{ color: blue }
   cursor: pointer; 
 }
 tr:nth-child(even) {background-color: #f2f2f2;}
-.arrow{
-  font-size: 20px;
-  margin-left: 5%;
 
+.arrow{
+  font-size: 30px;
+  margin-left: 5%;
 }
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -192,9 +208,10 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 .dropbtn {
   background-color: white;
   color: black;
-  padding: 10px;
   font-size: 16px;
   border:  1px solid ;
+  width: 75%;
+  height: 30px;
 }
 
 .DataListOption{

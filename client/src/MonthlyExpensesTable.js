@@ -77,10 +77,7 @@ class MonthlyExpensesTable extends React.Component {
                      <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.props.isOneTimeExpenses)}>❌</span>: ''} 
                   {expense[0]}
                   </td>
-                  <td className='spentType'>{SpenTypes[expense[1]]}
-                    {idx === expenses.length -1 || (!this.state.displayAll && idx===4) ? this.renderArrow() : null}
-                    
-                  </td>
+                  <td className='spentType'>{SpenTypes[expense[1]]} </td>
                   <td>{expense[2]}</td>
                 </tr>)
         })
@@ -91,8 +88,9 @@ class MonthlyExpensesTable extends React.Component {
 
     render(){
         return (
-        <div>
+            <div>
             {this.renderTable()}
+            {this.renderArrow()}
            </div>
         );
       
