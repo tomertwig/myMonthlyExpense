@@ -11,12 +11,12 @@ export const SpenTypes = {
   3:'🍽️ Restaurant',
   4:'🏥 SuperPharm',
   5:'🚌 Rav-Kav',
-  6:'👜 Fashion',
+  6:'🥤 Tamara',
   8:'🚕 Taxi',
-  9:'🥂 Events',
-  10:'🚗 Car2Go',
-  11:'💅 Pedicure',
-  12:'🍀 Green',
+  9:'👜 Fashion',
+  10:'🥂 Events',
+  11:'🚗 Car2Go',
+  12:'💅 Pedicure',
   13:'🏡 Rent Bill',
   14:'👩‍🍳 Gas Bill',
   15:'🚰 Water Bill',
@@ -26,8 +26,10 @@ export const SpenTypes = {
   19:'🌐 Internet Bill',
   20:'🏋️️ GYM',
   21:'☕ Coffee',
+  22:'🍀 Green',
   100:'❓ Other',
 }
+
 
 export const ActiveTab = {OneTime:0, Monthly:1, Total:2}
 
