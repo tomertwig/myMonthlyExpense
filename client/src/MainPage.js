@@ -26,7 +26,8 @@ export const SpenTypes = {
   19:'🌐 Internet Bill',
   20:'🏋️️ GYM',
   21:'☕ Coffee',
-  22:'🍀 Green',
+  22:'⚽ Soccer',
+  23:'🍀 Green',
   100:'❓ Other',
 }
 
