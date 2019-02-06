@@ -5,6 +5,8 @@ import './App.css';
 import MonthlyExpensesPage from "./MonthlyExpensesPage";
 import {serverUrl} from './Browse'
 
+export const InfoType = {TransactionsTable:0, SumupTable:1, Chart:2}
+
 export const SpenTypes = {
   1:'🛒 Supermarket',
   2:'🍺 Bar',
@@ -76,7 +78,7 @@ export default class App extends Component {
       dataType: 'json'
     }).then(r => r.json())
       .then((json) => {
-        this.setState({textValue:'', spentTypeKey: -1, amount:'', isChart:false})
+        this.setState({textValue:'', spentTypeKey: -1, amount:'', infoType:InfoType.TransactionsTable})
       if (json.result === 'failed')
       {
         alert("Invalid Input");
@@ -204,10 +206,10 @@ renderSelect(){
        mounth={mm}
        year={yyyy}
        writePermissions={true}
-       chart={this.state.isChart}
        handlePayCallback={this.handlePay}
        handleActiveTabChangedCallBack = {this.handleActiveTabChanged}
-       activeTab={this.state.activeTab}>
+       activeTab={this.state.activeTab}
+       infoType={this.state.infoType}>
 
       </MonthlyExpensesPage>
       </div>

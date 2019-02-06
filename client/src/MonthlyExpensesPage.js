@@ -2,12 +2,10 @@ import React from  'react'
 import './App.css';
 import $ from "jquery";
 
-import {SpenTypes, ActiveTab} from './MainPage'
+import {SpenTypes, ActiveTab, InfoType} from './MainPage'
 import {serverUrl} from './Browse'
 import { Chart } from "react-google-charts";
 import MonthlyExpensesTable from './MonthlyExpensesTable'
-
-const InfoType = {TransactionsTable:0, SumupTable:1, Chart:2}
 
 class MonthlyExpensesPage extends React.Component {
     constructor(props) {
@@ -40,6 +38,7 @@ class MonthlyExpensesPage extends React.Component {
     {
         this.setState({
             activeTab:props.activeTab,
+            infoType:props.infoType
         })
     
         this.fetchExpenses()
