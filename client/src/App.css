@@ -52,9 +52,18 @@ table.paleBlueRows tr:nth-child(even) {
   background: #D0E4F5;
 }
 table.paleBlueRows thead {
-  background: #0B6FA4;
+  background:  #0B6FA4;
+
   border-bottom: 5px solid #FFFFFF;
 }
+.paleBlueRowsActive {
+  background: #0B6FA4;
+}
+
+.paleBlueRowsNotActive {
+  background: rgb(133, 161, 175);
+}
+
 table.paleBlueRows thead th {
   font-size: 16px;
   font-weight: bold;
@@ -299,8 +308,7 @@ margin-right: auto;
 
 .icon-bar {
   width: 100%;
-  background-color: rgb(126, 128, 119);
-
+  background: rgb(133, 161, 175);
   overflow: auto;
 }
 
@@ -316,7 +324,7 @@ margin-right: auto;
 
 
 .active {
-  background-color: rgb(99, 184, 241);
+  background-color: #0B6FA4;
 }
 
 .googlechart{
