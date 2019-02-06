@@ -95,7 +95,7 @@ renderSignInPage() {
 renderHomeButton()
 {
     return(
-        <img className="iconButton" src={require('./home_icon.png')} width="42" height="42"/>
+        <img className="iconButton" src={require('./home_icon2.png')} width="42" height="42"/>
     )
 }
 

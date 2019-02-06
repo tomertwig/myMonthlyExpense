@@ -25,7 +25,7 @@
 table.paleBlueRows {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 40px;
 
   font-family: "Times New Roman", Times, serif;
@@ -157,9 +157,9 @@ table.paleBlueRows tbody td.spentType{
 .inputButton{
   width: 65%;
   height: 47px;
-  margin:10px;
+  margin-top:13px;
 
-  padding:10px;
+
   font-size:14px;
 }
 .inputButton:active {
@@ -322,6 +322,30 @@ margin-right: auto;
   font-size: 10px;
 }
 
+.subicon-bar-charts{
+  width: 93%;
+  margin-left:auto;
+  margin-right:auto;
+
+  background: rgb(133, 161, 175);
+  overflow: auto;
+  margin-top: 14px;
+  margin-bottom: 14px;
+
+}
+
+.subicon-bar-charts a {
+  float: left;
+  width: 33.3%;
+  text-align: center;
+  transition: all 0.3s ease;
+  color: white;
+
+}
+
+.subicon-bar-charts-active {
+  background-color: #0B6FA4;
+}
 
 .active {
   background-color: #0B6FA4;
@@ -342,12 +366,21 @@ margin-right: auto;
 }
 
 .tableHeadline{
-  margin-top: -20px;
+  margin-top: -32px;
   font-size: 21px;
-
   color:#0B6FA4;
   font-weight: bold;
 
+}
+
+.infoDataTables{
+  margin-bottom: 30px; 
+}
+.infoDataTables1{
+  margin-bottom: 50px; 
+}
+.infoData{
+  margin-top: -14px; 
 }
 
 .chartButtons {

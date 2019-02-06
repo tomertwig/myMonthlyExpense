@@ -28,9 +28,9 @@ export const SpenTypes = {
   24:'🥂 Events',
   25:'👜 Fashion',
   26:'💅 Pedicure',
-
   100:'❓ Other',
 }
+
 
 const ExpenseType = {OneTime:0, Unusual:1, Monthly:2}
 export const ActiveTab = {OneTime:0, UnusualExpenses:1, Monthly:2, Total:3}

@@ -1,23 +1,23 @@
 import React from  'react'
 import './App.css';
+import $ from "jquery";
+
 import {SpenTypes, ActiveTab} from './MainPage'
 import {serverUrl} from './Browse'
 import { Chart } from "react-google-charts";
 import MonthlyExpensesTable from './MonthlyExpensesTable'
 
-const ChartType = {Table:0, Pai:1}
+const InfoType = {TransactionsTable:0, SumupTable:1, Chart:2}
 
 class MonthlyExpensesPage extends React.Component {
     constructor(props) {
         super(props)
-        console.log('MonthlyExpensesPage INTTNT')
 
         this.props = {
             userID:props.userID,
             mounth:props.mounth,
             year:props.year,
             writePermissions:props.writePermissions,
-            chart:false,
             handlePayCallback:props.handlePayCallback,
             handleActiveTabChangedCallBack:props.handleActiveTabChangedCallBack
         }
@@ -29,7 +29,7 @@ class MonthlyExpensesPage extends React.Component {
             monthlyExpenses:0,
             oneTimeExpenses:0,
             unusualExpensesSum: 0,
-            chartType:ChartType.Table,
+            infoType:InfoType.TransactionsTable,
             activeTab:ActiveTab.OneTime
         }
 
@@ -72,21 +72,39 @@ class MonthlyExpensesPage extends React.Component {
     
     
     onActiveTabClicked =  (activeTab)  => {
-        this.setState({activeTab, chart:false})
+        this.setState({activeTab})
         if (this.props.handleActiveTabChangedCallBack)
         {
             this.props.handleActiveTabChangedCallBack(activeTab)
         }
     }
 
-    onChartClicked = () =>{
-        this.setState({chart: true})
+    handleInfoTypeClick = (infoType) =>{
+        this.setState({infoType})
+    }
+
+    renderInfoData = () =>{
+        switch (this.state.infoType){
+            case (InfoType.TransactionsTable): 
+            {
+                return this.renderTables();
+            }
+            case (InfoType.SumupTable): 
+            {
+                const data = this.getChartData()
+                return this.renderTableChart(data)
+            }
+            case (InfoType.Chart): 
+            {
+                const data = this.getChartData()
+                return this.renderPaiChart(data)            
+            }
+        }
     }
 
 
-    handleChartTypeClick = (chartType) =>{
-        this.setState({'chartType':chartType})
-    }
+
+
 
     renderPaiChart = (data)=>
     {
@@ -111,7 +129,6 @@ class MonthlyExpensesPage extends React.Component {
               height: "80%"
             },
             backgroundColor:'#f1f1f1',
-
             fontName: "Roboto"
           };
         console.log(data)
@@ -159,15 +176,7 @@ class MonthlyExpensesPage extends React.Component {
         </table>)
     }
     
-    renderChart(){
-        console.log('renderChart')
-        if (this.state.activeTab != ActiveTab.OneTime && this.state.activeTab != ActiveTab.Total)
-        {
-            console.log('NULLL')
-
-            return null;
-        }
-
+    getChartData(){
         const sumup = {}
         let expenses
         switch (this.state.activeTab){
@@ -198,31 +207,10 @@ class MonthlyExpensesPage extends React.Component {
         {
             data.push([key, sumup[key]])
         }
-
-        console.log(this.state.chartType)
-        if (this.state.chartType == ChartType.Table)
-        {
-            return (
-                <div>  
-                <button disabled className='chartButtons'>Table</button>
-                <button  className='chartButtons chartButtons_active'onClick={()=>this.handleChartTypeClick(ChartType.Pai)}> Chart</button>
-                {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
-                </div>
-            )
-        }
-        else //chart
-        {
-            return (
-                <div>  
-                <button className='chartButtons chartButtons_active' onClick={()=>{this.handleChartTypeClick(ChartType.Table)}}>Table</button>
-                <button disabled className='chartButtons'> Chart</button>
-                {this.state.chartType == ChartType.Pai ? this.renderPaiChart(data) : this.renderTableChart(data)}
-                </div>
-            )
-        }
-
-
+        
+        return data;
     }
+    
     
     getClassName(activeTab){
         return this.state.activeTab == activeTab ? 'paleBlueRowsActive' : 'paleBlueRowsNotActive'
@@ -252,6 +240,8 @@ class MonthlyExpensesPage extends React.Component {
             </tbody>
         </table>)
     }
+
+
 
 
     renderTables()
@@ -327,6 +317,30 @@ class MonthlyExpensesPage extends React.Component {
             return <button className='inputButton' onClick={() => this.props.handlePayCallback(this.state.activeTab)}> <div className='payText' > {buttonText} </div></button>
         }
     }
+
+
+    onTransctionsClicked()
+    {
+        this.setState({infoType: InfoType.TransactionsTable})
+    }
+    onSumupClicked()
+    {
+        this.setState({infoType: InfoType.SumupTable})
+    }
+    onChartClicked()
+    {
+        this.setState({infoType: InfoType.Chart})
+    }
+    renderHomeIcon()
+    {
+        return <a className={'active'}> <i> tomer</i></a>
+    }
+    
+    renderCalenderIcon()
+    {   
+        return <a><i> harel</i></a>
+    }
+
     render() {
         let headline;
         switch (this.state.activeTab){
@@ -347,14 +361,31 @@ class MonthlyExpensesPage extends React.Component {
                 break;
 
         }
+
+        let classNameSubicon
+        if (this.state.infoType == InfoType.TransactionsTable)
+        {
+            classNameSubicon =  "subicon-bar-charts infoDataTables"
+        }
+        else if(this.state.infoType == InfoType.SumupTable)
+        {
+            classNameSubicon = "subicon-bar-charts infoDataTables1"
+        }
+        else{
+            classNameSubicon = "subicon-bar-charts"
+
+        }
         return (
         <div>
             {this.renderPayButton()}
             {this.renderSumupTable()}
-            { <div className='tableHeadline'>
-              {headline}
-              {this.state.activeTab == ActiveTab.OneTime || this.state.activeTab == ActiveTab.Total ? <span  onClick={() => this.onChartClicked()} className='chartIcon'>📊 </span> : null} </div>}
-            {this.state.chart ? this.renderChart() : this.renderTables()}
+            { <div className='tableHeadline'>{headline} </div>}
+            <div className={classNameSubicon}>
+                <a className ={this.state.infoType == InfoType.TransactionsTable ? 'subicon-bar-charts-active':''} onClick={() => {this.onTransctionsClicked()}}> <i> <img className="iconButton" src={require('./transctions.png')} width="30" height="30"/></i></a>
+                <a className ={this.state.infoType == InfoType.SumupTable ? 'subicon-bar-charts-active':''}   onClick={() => {this.onSumupClicked()}}><i> <img className="iconButton" src={require('./sum.png')} width="30" height="30"/></i></a>
+                <a className ={this.state.infoType == InfoType.Chart ? 'subicon-bar-charts-active':''} onClick={() => {this.onChartClicked()}} ><i> <img className="iconButton" src={require('./chart1.png')} width="30" height="30"/></i></a>
+            </div>
+            <div className='infoData'> {this.renderInfoData()}</div>
         </div>
         )
 
