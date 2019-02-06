@@ -318,7 +318,7 @@ class MonthlyExpensesPage extends React.Component {
             }
             case ActiveTab.UnusualExpenses:
             {
-                buttonText = 'Unusual Payment'
+                buttonText ='💰 Unusual Payment'
                 break;
             }
             case ActiveTab.Monthly:
