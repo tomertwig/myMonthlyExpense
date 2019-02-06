@@ -235,8 +235,8 @@ class MonthlyExpensesPage extends React.Component {
                 }
                 <th onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)}> Unusual <span className='chartIcon'>🗂️ </span> </th>
                 <th onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
-                <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total
-                    <span className='chartIcon'>📊</span> 
+                <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total  
+                    <span className='chartIcon'>  📊</span> 
                 </th>
                 </tr>
             </thead>
