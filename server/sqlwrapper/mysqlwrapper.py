@@ -223,6 +223,17 @@ class mysqlwrapper():
             raise e
 
     @__configuration_required
+    def add_coulmn(self, tablename, column_name, column_type):
+        query = 'ALTER TABLE ' + tablename + ' ADD COLUMN ' + column_name + ' ' + column_type 
+        try:
+            self.__cur.execute(query)
+            self.__conn.commit()
+        except Exception as e:
+            self.__conn.rollback()
+            raise e
+
+
+    @__configuration_required
     def delete_all_from(self, tablename):
         """deletes all the entry from the given table
 		prototype: delete_all_from(tablename)

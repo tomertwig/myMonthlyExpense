@@ -25,12 +25,18 @@ USERS_TABLE = 'users2' # 'tom'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
-
+#db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
 @app.route('/deleteLatestTransaction')
 def deleteLatestTransaction():
+    print 'deleteLatestTransaction'
+
     user_id = request.args.get('user_id', default=0, type=int)
-    isOneTimeExpenses = request.args.get('isOneTimeExpenses') == 'true'
-    table = EXPENSES_TABLE if isOneTimeExpenses else MONTHLY_EXPENSES_TABLE
+    expenses_type =  request.args.get('expenses_type', default=-1, type=int)
+    print expenses_type
+    assert expenses_type >= 0
+    table = EXPENSES_TABLE if expenses_type < 2 else MONTHLY_EXPENSES_TABLE
+    print table
+
     db.delete_latest_transaction(table, user_id)
     return ''
 
@@ -40,16 +46,24 @@ def pay():
     user_id = request.args.get('user_id', default=0, type=int)
     amount = request.args.get('amount', default=0, type=int)
     spent_type = request.args.get('spent_type', default=0, type=int)
-    is_monthly_expense = request.args.get('is_monthly_expense') == 'true'
+    expense_type = request.args.get('expense_type', default=0, type=int)
 
 
     if amount <= 0 or spent_type == 0:
         print 'failed pay !!!! '
         jsonResp = {'result': 'failed'}
         return jsonify(jsonResp)
+
+    table = MONTHLY_EXPENSES_TABLE if expense_type == 2 else EXPENSES_TABLE
+    coulmns = ['user_id', 'spent_type', 'amount']
+    data = [user_id, spent_type, amount]
+
+    if expense_type < 2:
+        unusual = expense_type == 1 
+        coulmns.append('unusual')
+        data.append(unusual)
     
-    table = MONTHLY_EXPENSES_TABLE if is_monthly_expense else EXPENSES_TABLE
-    db.insert(table, ['user_id', 'spent_type', 'amount'], [user_id, spent_type, amount])  
+    db.insert(table, coulmns, data)  
 
     jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
@@ -75,11 +89,16 @@ def getLestExpenses():
 
     monthly_expenses_data =[]
     one_time_data =[]
+    unusual_data = []
     mountly_expenses_sum = 0
     one_time_expenses_sum = 0
+    unusual_data_sum = 0
 
-    jsonResp = {'monthlyExpensesData':monthly_expenses_data, 'monthlyExpensesSum':mountly_expenses_sum,
+    jsonResp = {'monthlyExpensesData':monthly_expenses_data,
+     'monthlyExpensesSum':mountly_expenses_sum,
      'oneTimeExpensesData': one_time_data,
+     'unusualExpensesData':unusual_data,
+     'unusualExpensesDataSum': unusual_data_sum,
      'oneTimeExpensesSum': one_time_expenses_sum}
 
     fetched_one_time_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
@@ -94,12 +113,23 @@ def getLestExpenses():
             mountly_expenses_sum += int(d[3])  
     
     for d in fetched_one_time_data:
-        one_time_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
-        one_time_expenses_sum += int(d[3])
+        if d[4]:#unusual flag:
+            unusual_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
+            unusual_data_sum += int(d[3])
+        else:
+            one_time_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
+            one_time_expenses_sum += int(d[3])
         
-    jsonResp = {'monthlyExpensesData':monthly_expenses_data, 'monthlyExpensesSum':mountly_expenses_sum,
+    print('unusual_data_sum')
+    print(unusual_data_sum)
+
+    jsonResp = {'monthlyExpensesData':monthly_expenses_data,
+     'monthlyExpensesSum':mountly_expenses_sum,
      'oneTimeExpensesData': one_time_data,
+     'unusualExpensesData':unusual_data,
+     'unusualExpensesSum': unusual_data_sum,
      'oneTimeExpensesSum': one_time_expenses_sum}
+
     return jsonify(jsonResp)
 
 @app.route('/login')

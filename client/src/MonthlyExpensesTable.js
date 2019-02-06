@@ -1,27 +1,38 @@
 import React from  'react'
 import './App.css';
-import {SpenTypes} from './MainPage'
+import {SpenTypes, ActiveTab} from './MainPage'
 import {serverUrl} from './Browse'
 
 class MonthlyExpensesTable extends React.Component {
     constructor(props) {
-        super()
+        super(props)
         this.props = {
             userID: props.userID,
             expenses: props.expenses,
-            isOneTimeExpenses: props.isOneTimeExpenses,
             writePermissions:props.writePermissions,
             fetchExpensesCallback:props.fetchExpensesCallback
         }
         this.state = {
             displayAll:false,
+            activeTab: props.activeTab,
         }
     }
 
-    handleDeleteLatestTransaction = (isOneTimeExpenses) => {
+    componentWillReceiveProps(props)
+    {
+        this.setState({
+            activeTab:props.activeTab,
+            chart: props.chart
+        })
+    
+    }
 
+
+    handleDeleteLatestTransaction = (activeTab) => {
+        console.log('handleDeleteLatestTransaction')
+        console.log(activeTab)
         if (window.confirm("Are you sure you want to delete this transaction?")) {
-          fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&isOneTimeExpenses='+isOneTimeExpenses,{
+          fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&expenses_type='+this.state.activeTab,{
             method: 'GET',
             dataType: 'json'
           }).then(() => {
@@ -42,11 +53,14 @@ class MonthlyExpensesTable extends React.Component {
     }  
 
     renderArrow(){
-        if (!this.props.isOneTimeExpenses){
-            return;
+        if (this.state.activeTab == ActiveTab.OneTime){
+            return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
+            <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>)
         }
-        return( this.state.displayAll ?  <span className="arrow" onClick={() => this.handleShowLess()}>⇧</span> :
-        <span className="arrow" onClick={() => this.handleDisplayAll()}>⇩</span>)
+        else
+        {
+            return null;
+        }
     }
     renderTable(){
        const expenses = this.props.expenses
@@ -63,7 +77,7 @@ class MonthlyExpensesTable extends React.Component {
       {
         expenses.map((expense, idx) => {
         if (idx >4){
-          if (this.props.isOneTimeExpenses && !this.state.displayAll )
+          if (this.state.activeTab == ActiveTab.OneTime && !this.state.displayAll )
             {
              return null ;
             }
@@ -73,7 +87,7 @@ class MonthlyExpensesTable extends React.Component {
          return (<tr key={idx}>
                   <td className= "dateTable">
                   {this.props.writePermissions && idx === 0 ?
-                     <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.props.isOneTimeExpenses)}>❌</span>: ''} 
+                     <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.state.activeTab)}>❌</span>: ''} 
                   {expense[0]}
                   </td>
                   <td className='spentType'>{SpenTypes[expense[1]]} </td>
@@ -86,6 +100,7 @@ class MonthlyExpensesTable extends React.Component {
     }
 
     render(){
+        console.log()
         return (
             <div className='tableWithArrow'>
             {this.renderTable()}

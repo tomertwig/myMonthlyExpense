@@ -4,7 +4,7 @@ import {serverUrl} from './Browse'
 
 class HistoryPage extends React.Component {
     constructor(props) {
-        super()
+        super(props)
 
         this.props = {
             userID:props.userID,

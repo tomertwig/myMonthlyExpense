@@ -13,49 +13,65 @@ export const SpenTypes = {
   5:'🚌 Rav-Kav',
   6:'🥤 Tamara',
   8:'🚕 Taxi',
-  9:'👜 Fashion',
-  10:'🥂 Events',
   11:'🚗 Car2Go',
-  12:'💅 Pedicure',
   13:'🏡 Rent Bill',
-  14:'👩‍🍳 Gas Bill',
-  15:'🚰 Water Bill',
-  16:'🔌 Electricity Bill',
-  17:'🏢 Arnona Bill',
-  18:'🏘️ House Committee',
-  19:'🌐 Internet Bill',
-  20:'🏋️️ GYM',
+  14:'🌐 Internet Bill',
+  15:'🏋️️ GYM',
+  16:'🏘️ House Committee',
+  17:'👩‍🍳 Gas Bill',
+  18:'🚰 Water Bill',
+  19:'🔌 Electricity Bill',
+  20:'🏢 Arnona Bill',
   21:'☕ Coffee',
   22:'⚽ Soccer',
   23:'🍀 Green',
+  24:'🥂 Events',
+  25:'👜 Fashion',
+  26:'💅 Pedicure',
+
   100:'❓ Other',
 }
 
-
-export const ActiveTab = {OneTime:0, Monthly:1, Total:2}
+const ExpenseType = {OneTime:0, Unusual:1, Monthly:2}
+export const ActiveTab = {OneTime:0, UnusualExpenses:1, Monthly:2, Total:3}
 
 
 export default class App extends Component {
   
 
   constructor(props) {
-    super()
+    super(props)
     this.props = {
       userID:props.userID,
     }
     this.state = {
-      isMonthlyExpense: false,
+      expenseType: ExpenseType.OneTime,
       spentTypeKey: -1,
       filteredOptions: {},
       textValue:'',
-      activeTab: ActiveTab.OneTime
+      activeTab:ActiveTab.OneTime
     }
   }
 
   handlePay = () => {
     $('input').blur();
+    
+    let expenseType;
+    if (this.state.activeTab == ActiveTab.OneTime)
+    {
+      expenseType = ExpenseType.OneTime
+    }
+    else if (this.state.activeTab  == ActiveTab.UnusualExpenses)
+    {
+      expenseType = ExpenseType.Unusual
+    }
+    else
+    {
+      expenseType = ExpenseType.Monthly
+    }
+
     fetch(serverUrl+ 'pay?user_id=' + this.props.userID +'&amount='+
-    this.state.amount + '&spent_type=' + this.state.spentTypeKey +'&is_monthly_expense=' +this.state.isMonthlyExpense, {
+    this.state.amount + '&spent_type=' + this.state.spentTypeKey +'&expense_type=' + expenseType, {
       method: 'GET',
       dataType: 'json'
     }).then(r => r.json())
@@ -67,16 +83,12 @@ export default class App extends Component {
         return;
       }
     })
+
   }
   
   handleSpentTypeChanged = (key) => {
+    console.log('handleSpentTypeChanged')
     this.setState({spentTypeKey: key});
-  }
-
-  handleCheck = () => { 
-    const isMonthlyExpense = !this.state.isMonthlyExpense
-    const activeTab = isMonthlyExpense ? ActiveTab.Monthly : ActiveTab.OneTime 
-    this.setState({isMonthlyExpense, activeTab});
   }
 
   handleAmountChanged = (e) => {    
@@ -105,7 +117,13 @@ updateFilter = (evt) => {
 }
 }
 
+handleActiveTabChanged = (activeTab) => 
+{
+  this.setState({activeTab})
+}
+
 handleClick = (key) => {
+  console.log('handleClick')
   this.handleSpentTypeChanged(key)
   this.setState({textValue: this.state.filteredOptions[key]})
   this.hideList();
@@ -145,7 +163,7 @@ handleKeyPressedForNumber= (e) => {
 }
 
 renderSelect(){
-
+  console.log('renderSelect')
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
       return (<div className='DataListOption' data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
@@ -177,20 +195,17 @@ renderSelect(){
         {this.renderSelect()}
         <input type="number" pattern="[0-9]*"   className='inputLayout1' placeholder="Enter amount.." 
           value={this.state.amount} onChange={this.handleAmountChanged} onKeyPress={this.handleKeyPressedForNumber} />
-        <div className="paymentButtons">
-          <span className='checkboxLayout'onClick={()=>this.handleCheck()}>⇄</span> 
-          {this.state.isMonthlyExpense ? 
-          <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💳 Monthly Payment </div></button>:
-          <button className='inputButton' onClick={() => this.handlePay()}> <div className='payText' >💵 One Time Payment </div></button>}
-        </div>
       </div>
       <MonthlyExpensesPage
        userID={this.props.userID}
        mounth={mm}
        year={yyyy}
        writePermissions={true}
-       activeTab={this.state.activeTab}
-       chart={this.state.isChart}>
+       chart={this.state.isChart}
+       handlePayCallback={this.handlePay}
+       handleActiveTabChangedCallBack = {this.handleActiveTabChanged}
+       activeTab={this.state.activeTab}>
+
       </MonthlyExpensesPage>
       </div>
     );

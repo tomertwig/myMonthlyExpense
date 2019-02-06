@@ -9,20 +9,26 @@ const ChartType = {Table:0, Pai:1}
 
 class MonthlyExpensesPage extends React.Component {
     constructor(props) {
-        super()
+        super(props)
+        console.log('MonthlyExpensesPage INTTNT')
+
         this.props = {
             userID:props.userID,
             mounth:props.mounth,
             year:props.year,
             writePermissions:props.writePermissions,
             chart:false,
+            handlePayCallback:props.handlePayCallback,
+            handleActiveTabChangedCallBack:props.handleActiveTabChangedCallBack
         }
 
         this.state = {
             monthlyExpensesData:[],
             oneTimeExpensesData:[],
+            unusualExpensesData:[],
             monthlyExpenses:0,
             oneTimeExpenses:0,
+            unusualExpensesSum: 0,
             chartType:ChartType.Table,
             activeTab:ActiveTab.OneTime
         }
@@ -32,13 +38,11 @@ class MonthlyExpensesPage extends React.Component {
 
     componentWillReceiveProps(props)
     {
-        console.log('componentWillReceiveProps')
-
-        console.log(props.activeTab)
         this.setState({
             activeTab:props.activeTab,
             chart: props.chart
         })
+    
         this.fetchExpenses()
     }
 
@@ -48,7 +52,8 @@ class MonthlyExpensesPage extends React.Component {
         expenses.then(result => {
           console.log(result)
           this.setState({ monthlyExpensesData:result.monthlyExpensesData,  monthlyExpensesSum:result.monthlyExpensesSum,
-            oneTimeExpensesData:result.oneTimeExpensesData,  oneTimeExpensesSum:result.oneTimeExpensesSum})
+            oneTimeExpensesData:result.oneTimeExpensesData,  oneTimeExpensesSum:result.oneTimeExpensesSum,
+            unusualExpensesData:result.unusualExpensesData, unusualExpensesSum:result.unusualExpensesSum})
         })
       }
 
@@ -66,15 +71,15 @@ class MonthlyExpensesPage extends React.Component {
         .catch(err => console.log(err))
     }
     
-    onChartClicked = (disaplayOneTimeExpenses) =>{
-        const activeTab = disaplayOneTimeExpenses ? ActiveTab.OneTime : ActiveTab.Total
-        this.setState({chart:true, disaplayOneTimeExpenses, activeTab})
-    }
     
-    onMonthlyClicked = (isMmonthlyTable) => {
-        const activeTab = isMmonthlyTable ? ActiveTab.Monthly : ActiveTab.OneTime
-
-        this.setState({chart:false, activeTab})
+    onActiveTabClicked =  (activeTab)  => {
+        let chart = (activeTab == ActiveTab.Total || (activeTab == ActiveTab.OneTime && this.state.activeTab ==  ActiveTab.OneTime))
+        if (this.state.chart == chart)
+        {
+            chart = false;
+        }
+        this.setState({chart, activeTab})
+        this.props.handleActiveTabChangedCallBack(activeTab)
     }
 
     handleChartTypeClick = (chartType) =>{
@@ -153,17 +158,26 @@ class MonthlyExpensesPage extends React.Component {
     }
     
     renderChart(){
+
+        if (this.state.activeTab != ActiveTab.OneTime && this.state.activeTab != ActiveTab.Total)
+        {
+            return null;
+        }
+
         const sumup = {}
         let expenses
         switch (this.state.activeTab){
             case ActiveTab.OneTime: 
                 expenses = this.state.oneTimeExpensesData 
                 break;
+            case ActiveTab.UnusualExpenses:
+                expenses = this.state.unusualExpensesData
+                break;
             case ActiveTab.Monthly: 
                 expenses = this.state.monthlyExpensesData;
                 break;
             case ActiveTab.Total:
-                expenses = this.state.oneTimeExpensesData.concat(this.state.monthlyExpensesData)
+                expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData).concat(this.state.monthlyExpensesData)
                 break;             
         }
         for (let i = 0; i < expenses.length; i++)
@@ -181,7 +195,7 @@ class MonthlyExpensesPage extends React.Component {
             data.push([key, sumup[key]])
         }
 
-        console.log(this.state.chartType )
+        console.log(this.state.chartType)
         if (this.state.chartType == ChartType.Table)
         {
             return (
@@ -215,20 +229,23 @@ class MonthlyExpensesPage extends React.Component {
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                {this.state.activeTab != ActiveTab.OneTime || this.state.chart ? <th onClick={() => this.onMonthlyClicked(false)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
-                <th onClick={() => this.onChartClicked(true)}>One-Time <span className='chartIcon'>📊 </span> </th>}
-                <th onClick={() => this.onMonthlyClicked(true)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
-                <th onClick={() => this.onChartClicked(false)}>Total
+                { this.state.activeTab != ActiveTab.OneTime || this.state.chart ?
+                  <th onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
+                  <th onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>One-Time <span className='chartIcon'>📊 </span> </th>
+                }
+                <th onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)}> Unusual <span className='chartIcon'>🗂️ </span> </th>
+                <th onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
+                <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total
                     <span className='chartIcon'>📊</span> 
                 </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                {this.state.activeTab != ActiveTab.OneTime || this.state.chart ? <td onClick={() => this.onMonthlyClicked(false)}>{this.state.oneTimeExpensesSum}</td> :
-                <td onClick={() => this.onChartClicked(true)}>{this.state.oneTimeExpensesSum}</td>}
-                <td onClick={() => this.onMonthlyClicked(true)} > {this.state.monthlyExpensesSum}</td>
-                <td onClick={() => this.onChartClicked(false)} >{this.state.oneTimeExpensesSum + this.state.monthlyExpensesSum}</td>
+                <td onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>{this.state.oneTimeExpensesSum}</td>
+                <td onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)} > {this.state.unusualExpensesSum}</td>
+                <td onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)} > {this.state.monthlyExpensesSum}</td>
+                <td onClick={() => this.onActiveTabClicked(ActiveTab.Total)} >{this.state.oneTimeExpensesSum + this.state.monthlyExpensesSum}</td>
                 </tr>
             </tbody>
         </table>)
@@ -238,15 +255,19 @@ class MonthlyExpensesPage extends React.Component {
     renderTables()
     {  
         let expenses
+
         switch (this.state.activeTab){
             case ActiveTab.OneTime: 
                 expenses = this.state.oneTimeExpensesData 
                 break;
+            case ActiveTab.UnusualExpenses:
+                expenses = this.state.unusualExpensesData 
+                break
             case ActiveTab.Monthly: 
                 expenses = this.state.monthlyExpensesData;
                 break;
             case ActiveTab.Total:
-                expenses = this.state.oneTimeExpensesData.concat(this.state.monthlyExpensesData)
+                expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData).concat(this.state.monthlyExpensesData)
                 break;             
         }
 
@@ -255,18 +276,50 @@ class MonthlyExpensesPage extends React.Component {
                  userID={this.props.userID}
                  expenses={expenses}
                  writePermissions={this.props.writePermissions}
-                 isOneTimeExpenses={this.state.activeTab != ActiveTab.Monthly}
+                 activeTab={this.state.activeTab}
                  fetchExpensesCallback={this.fetchExpenses}>
                  </MonthlyExpensesTable> 
         )
     }
 
-    render() {
+    renderPayButton()
+    {
+        let buttonText = ''
+        console.log('activeTabfsdmfioiofdsn')
+        console.log(this.state.activeTab)
 
+        switch (this.state.activeTab)
+        {
+            case ActiveTab.OneTime:
+            case ActiveTab.Total:
+            {
+                buttonText ='💵 One Time Payment'
+                break;
+            }
+            case ActiveTab.UnusualExpenses:
+            {
+                buttonText = 'Unusual Payment'
+                break;
+            }
+            case ActiveTab.Monthly:
+            {
+                buttonText = '💳 Monthly Payment'
+                break
+            }
+        }
+        console.log('this.state.activeTab')
+
+        console.log(this.state.activeTab)
+        return <button className='inputButton' onClick={() => this.props.handlePayCallback(this.state.activeTab)}> <div className='payText' > {buttonText} </div></button>
+    }
+    render() {
         let headline;
         switch (this.state.activeTab){
             case ActiveTab.Total:
                 headline = 'Total Expenses'
+                break;
+            case ActiveTab.UnusualExpenses:
+                headline = 'Unusual Expenses'
                 break;
             case ActiveTab.Monthly:
                 headline = 'Monthly Expenses'
@@ -281,6 +334,7 @@ class MonthlyExpensesPage extends React.Component {
         }
         return (
         <div>
+            {this.renderPayButton()}
             {this.renderSumupTable()}
             { <div className='tableHeadline'> {headline} </div>}
             {this.state.chart ? this.renderChart() : this.renderTables()}
