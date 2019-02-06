@@ -72,24 +72,17 @@ class MonthlyExpensesPage extends React.Component {
     
     
     onActiveTabClicked =  (activeTab)  => {
-        console.log('onActiveTabClicked')
-
-        console.log(activeTab)
-        console.log(this.state.activeTab)
-
-        let chart = (activeTab == ActiveTab.Total || activeTab == ActiveTab.OneTime) && (this.state.activeTab ==  activeTab)
-        console.log(chart)
-
-        if (this.state.chart == chart)
-        {
-            chart = false;
-        }
-        this.setState({chart, activeTab})
+        this.setState({activeTab, chart:false})
         if (this.props.handleActiveTabChangedCallBack)
         {
             this.props.handleActiveTabChangedCallBack(activeTab)
         }
     }
+
+    onChartClicked = () =>{
+        this.setState({chart: true})
+    }
+
 
     handleChartTypeClick = (chartType) =>{
         this.setState({'chartType':chartType})
@@ -243,24 +236,18 @@ class MonthlyExpensesPage extends React.Component {
         <table className='paleBlueRows'>
             <thead>
                 <tr>
-                { this.state.activeTab != ActiveTab.OneTime || this.state.chart ?
-                  <th className={this.getClassName(ActiveTab.OneTime)}   onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>One-Time <span className='chartIcon'>🗂️ </span> </th> :
-                  <th className={this.getClassName(ActiveTab.OneTime)}   onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>One-Time <span className='chartIcon'>📊 </span> </th>
-                }
-                <th className={this.getClassName(ActiveTab.UnusualExpenses)} onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)}> Unusual <span className='chartIcon'>🗂️ </span> </th>
-                <th className={this.getClassName(ActiveTab.Monthly)} onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
-                { this.state.activeTab != ActiveTab.Total || this.state.chart ?
-                  <th className={this.getClassName(ActiveTab.Total)}  onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total <span className='chartIcon'  >🗂️ </span> </th> :
-                  <th className={this.getClassName(ActiveTab.Total)}   onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total <span className='chartIcon'>  📊 </span> </th>
-                }   
+                    <th className={this.getClassName(ActiveTab.OneTime)}   onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>One-Time</th> 
+                    <th className={this.getClassName(ActiveTab.UnusualExpenses)} onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)}>Unusual</th>
+                    <th className={this.getClassName(ActiveTab.Monthly)} onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)}>Monthly</th>
+                    <th className={this.getClassName(ActiveTab.Total)}  onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total</th> 
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                <td onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>{this.state.oneTimeExpensesSum}</td>
-                <td onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)} > {this.state.unusualExpensesSum}</td>
-                <td onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)} > {this.state.monthlyExpensesSum}</td>
-                <td onClick={() => this.onActiveTabClicked(ActiveTab.Total)} >{this.state.oneTimeExpensesSum + this.state.unusualExpensesSum + this.state.monthlyExpensesSum}</td>
+                    <td onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>{this.state.oneTimeExpensesSum}</td>
+                    <td onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)} > {this.state.unusualExpensesSum}</td>
+                    <td onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)} > {this.state.monthlyExpensesSum}</td>
+                    <td onClick={() => this.onActiveTabClicked(ActiveTab.Total)} >{this.state.oneTimeExpensesSum + this.state.unusualExpensesSum + this.state.monthlyExpensesSum}</td>
                 </tr>
             </tbody>
         </table>)
@@ -311,7 +298,6 @@ class MonthlyExpensesPage extends React.Component {
         switch (this.state.activeTab)
         {
             case ActiveTab.OneTime:
-            case ActiveTab.Total:
             {
                 buttonText ='💵 One Time Payment'
                 break;
@@ -326,11 +312,20 @@ class MonthlyExpensesPage extends React.Component {
                 buttonText = '💳 Monthly Payment'
                 break
             }
+            case ActiveTab.Total:
+                buttonText = 'Invalid'
+                break
         }
         console.log('this.state.activeTab')
 
         console.log(this.state.activeTab)
-        return <button className='inputButton' onClick={() => this.props.handlePayCallback(this.state.activeTab)}> <div className='payText' > {buttonText} </div></button>
+        if (this.state.activeTab === ActiveTab.Total)
+        {
+            return <button className='inputButton' disabled> <div className='payText' > {buttonText} </div></button>
+        }
+        else{
+            return <button className='inputButton' onClick={() => this.props.handlePayCallback(this.state.activeTab)}> <div className='payText' > {buttonText} </div></button>
+        }
     }
     render() {
         let headline;
@@ -356,7 +351,9 @@ class MonthlyExpensesPage extends React.Component {
         <div>
             {this.renderPayButton()}
             {this.renderSumupTable()}
-            { <div className='tableHeadline'> {headline} </div>}
+            { <div className='tableHeadline'>
+              {headline}
+              {this.state.activeTab == ActiveTab.OneTime || this.state.activeTab == ActiveTab.Total ? <span  onClick={() => this.onChartClicked()} className='chartIcon'>📊 </span> : null} </div>}
             {this.state.chart ? this.renderChart() : this.renderTables()}
         </div>
         )

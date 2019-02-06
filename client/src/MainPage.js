@@ -119,6 +119,9 @@ updateFilter = (evt) => {
 
 handleActiveTabChanged = (activeTab) => 
 {
+  $('input').attr('disabled', activeTab == ActiveTab.Total)
+  $('input').attr('disabled', activeTab == ActiveTab.Total)
+
   this.setState({activeTab})
 }
 
