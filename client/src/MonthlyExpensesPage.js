@@ -40,7 +40,6 @@ class MonthlyExpensesPage extends React.Component {
     {
         this.setState({
             activeTab:props.activeTab,
-            chart: props.chart
         })
     
         this.fetchExpenses()
@@ -73,7 +72,14 @@ class MonthlyExpensesPage extends React.Component {
     
     
     onActiveTabClicked =  (activeTab)  => {
-        let chart = (activeTab == ActiveTab.Total || (activeTab == ActiveTab.OneTime && this.state.activeTab ==  ActiveTab.OneTime))
+        console.log('onActiveTabClicked')
+
+        console.log(activeTab)
+        console.log(this.state.activeTab)
+
+        let chart = (activeTab == ActiveTab.Total || activeTab == ActiveTab.OneTime) && (this.state.activeTab ==  activeTab)
+        console.log(chart)
+
         if (this.state.chart == chart)
         {
             chart = false;
@@ -158,9 +164,11 @@ class MonthlyExpensesPage extends React.Component {
     }
     
     renderChart(){
-
+        console.log('renderChart')
         if (this.state.activeTab != ActiveTab.OneTime && this.state.activeTab != ActiveTab.Total)
         {
+            console.log('NULLL')
+
             return null;
         }
 
@@ -235,9 +243,10 @@ class MonthlyExpensesPage extends React.Component {
                 }
                 <th onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)}> Unusual <span className='chartIcon'>🗂️ </span> </th>
                 <th onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)}> Monthly <span className='chartIcon'>🗂️ </span> </th>
-                <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total  
-                    <span className='chartIcon'>  📊</span> 
-                </th>
+                { this.state.activeTab != ActiveTab.Total || this.state.chart ?
+                  <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total <span className='chartIcon'  >🗂️ </span> </th> :
+                  <th onClick={() => this.onActiveTabClicked(ActiveTab.Total)}>Total <span className='chartIcon'>  📊 </span> </th>
+                }   
                 </tr>
             </thead>
             <tbody>
@@ -267,8 +276,12 @@ class MonthlyExpensesPage extends React.Component {
                 expenses = this.state.monthlyExpensesData;
                 break;
             case ActiveTab.Total:
-                expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData).concat(this.state.monthlyExpensesData)
+                expenses = []
+                expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData, this.state.monthlyExpensesData)
+                expenses.sort();
+                expenses.reverse()
                 break;             
+                
         }
 
         return( 
@@ -284,10 +297,11 @@ class MonthlyExpensesPage extends React.Component {
 
     renderPayButton()
     {
+        if (!this.props.handlePayCallback){
+            return null;
+        }
+        
         let buttonText = ''
-        console.log('activeTabfsdmfioiofdsn')
-        console.log(this.state.activeTab)
-
         switch (this.state.activeTab)
         {
             case ActiveTab.OneTime:

@@ -148,6 +148,8 @@ table.paleBlueRows tbody td.spentType{
 .inputButton{
   width: 65%;
   height: 47px;
+  margin:10px;
+
   padding:10px;
   font-size:14px;
 }
