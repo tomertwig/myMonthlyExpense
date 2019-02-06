@@ -260,7 +260,7 @@ class MonthlyExpensesPage extends React.Component {
                 <td onClick={() => this.onActiveTabClicked(ActiveTab.OneTime)}>{this.state.oneTimeExpensesSum}</td>
                 <td onClick={() => this.onActiveTabClicked(ActiveTab.UnusualExpenses)} > {this.state.unusualExpensesSum}</td>
                 <td onClick={() => this.onActiveTabClicked(ActiveTab.Monthly)} > {this.state.monthlyExpensesSum}</td>
-                <td onClick={() => this.onActiveTabClicked(ActiveTab.Total)} >{this.state.oneTimeExpensesSum + this.state.monthlyExpensesSum}</td>
+                <td onClick={() => this.onActiveTabClicked(ActiveTab.Total)} >{this.state.oneTimeExpensesSum + this.state.unusualExpensesSum + this.state.monthlyExpensesSum}</td>
                 </tr>
             </tbody>
         </table>)
