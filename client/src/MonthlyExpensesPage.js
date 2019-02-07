@@ -36,9 +36,11 @@ class MonthlyExpensesPage extends React.Component {
 
     componentWillReceiveProps(props)
     {
+        let infoType = props.infoType != null ? props.infoType :this.state.infoType
+
         this.setState({
             activeTab:props.activeTab,
-            infoType:props.infoType
+            infoType
         })
     
         this.fetchExpenses()
