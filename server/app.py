@@ -296,7 +296,9 @@ def add_new_type():
     }
 
     for k,v in spenTypes.iteritems():
-        db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
+        pass
+         #TODO need to move this to the sign in page
+        #db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
 
 
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
