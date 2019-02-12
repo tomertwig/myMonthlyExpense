@@ -42,18 +42,12 @@ db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name'
 #db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
 @app.route('/deleteLatestTransaction')
 
-
-
-
 def deleteLatestTransaction():
-    print 'deleteLatestTransaction'
 
     user_id = request.args.get('user_id', default=0, type=int)
     expenses_type =  request.args.get('expenses_type', default=-1, type=int)
-    print expenses_type
     assert expenses_type >= 0
     table = EXPENSES_TABLE if expenses_type < 2 else MONTHLY_EXPENSES_TABLE
-    print table
 
     db.delete_latest_transaction(table, user_id)
     return ''
@@ -96,7 +90,6 @@ def _db_heartbeat():
 
 @app.route('/expenses')
 def getLestExpenses():
-    print 'expenses'
     _db_heartbeat()
 
     user_id = request.args.get('user_id', default=0, type=int)
@@ -137,9 +130,6 @@ def getLestExpenses():
         else:
             one_time_data.append([d[0].strftime("%d-%m"), d[2], d[3]])
             one_time_expenses_sum += int(d[3])
-        
-    print('unusual_data_sum')
-    print(unusual_data_sum)
 
     jsonResp = {'monthlyExpensesData':monthly_expenses_data,
      'monthlyExpensesSum':mountly_expenses_sum,
@@ -161,7 +151,6 @@ def login():
     result = 'failed'
 
     fetched_data = db.fetch_by(USERS_TABLE, 'user_name= ' +"'" + str(user_name) +"'" )
-    print fetched_data
 
     user_id = 0
     if len(fetched_data) == 1 and fetched_data[0]['password'] == password:
@@ -203,15 +192,11 @@ def _month_year_iter():
     now = datetime.now() 
 
     end_month = datetime.now().month
-    print end_month
     end_year = datetime.now().year
     ym_start= 12*start_year + start_month - 1
 
 
     ym_end= 12*end_year + end_month - 1
-    print ym_start
-    print ym_end
-
 
     for ym in range( ym_start, ym_end +1 ):
         y, m = divmod( ym, 12 )
@@ -243,9 +228,7 @@ def all_expenses():
                 mountly_expenses += int(d[3])  
                 
         date = now.replace(month=month, year=year).strftime("%m-%Y")
-        print result
         result = [{'date': date, 'amount': mountly_expenses }] + result
-        print result
 
     jsonResp = {'result': result}
     return jsonify(jsonResp)
@@ -257,7 +240,6 @@ def spent_types():
     jsonResp = {'spentTypes': {}}
 
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
-    print fetched_spent_type
 
     spent_types = {s['spent_type_id']: [s['spent_type_name'], s['is_valid']] for s in fetched_spent_type }
     jsonResp = {'spentTypes': spent_types}
@@ -318,7 +300,6 @@ def remove_type():
     db.update_by(USER_SPENT_TYPES, ['is_valid'], [False], 'user_id=' + str(user_id) +' And  spent_type_id=' + str(spent_type_id) )
     jsonResp = {'result': 'success'}
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
-    print fetched_spent_type
     return jsonify(jsonResp)
 
 if __name__ == '__main__':
