@@ -99,7 +99,7 @@ class MonthlyExpensesTable extends React.Component {
                      <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.state.activeTab)}>❌</span>: ''} 
                   {expense[0]}
                   </td>
-                  <td className='spentType'>{this.props.spentTypes[expense[1]] ? this.props.spentTypes[expense[1]][0] : null } </td>
+                  <td className='spentType'>{this.props.spentTypes && this.props.spentTypes[expense[1]] ? this.props.spentTypes[expense[1]][0] : null } </td>
                   <td>{expense[2]}</td>
                 </tr>)
         })
