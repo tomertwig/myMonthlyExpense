@@ -7,53 +7,31 @@ import {serverUrl} from './Browse'
 
 export const InfoType = {TransactionsTable:0, SumupTable:1, Chart:2}
 
-export const SpenTypes = {
-  1:'🛒 Supermarket',
-  2:'🍺 Bar',
-  3:'🍽️ Restaurant',
-  4:'🏥 SuperPharm',
-  5:'🚌 Rav-Kav',
-  6:'🥤 Tamara',
-  8:'🚕 Taxi',
-  11:'🚗 Car2Go',
-  13:'🏡 Rent Bill',
-  14:'🌐 Internet Bill',
-  15:'🏋️️ GYM',
-  16:'🏘️ House Committee',
-  17:'👩‍🍳 Gas Bill',
-  18:'🚰 Water Bill',
-  19:'🔌 Electricity Bill',
-  20:'🏢 Arnona Bill',
-  21:'☕ Coffee',
-  22:'⚽ Soccer',
-  23:'🍀 Green',
-  24:'🥂 Events',
-  25:'👜 Fashion',
-  26:'💅 Pedicure',
-  100:'❓ Other',
-}
-
-
 const ExpenseType = {OneTime:0, Unusual:1, Monthly:2}
 export const ActiveTab = {OneTime:0, UnusualExpenses:1, Monthly:2, Total:3}
-
 
 export default class App extends Component {
   
 
   constructor(props) {
     super(props)
+    console.log(props.spentTypes)
+    console.log('App.props.spentTypes')
+
     this.props = {
       userID:props.userID,
+      spentTypes: props.spentTypes
     }
+
     this.state = {
       expenseType: ExpenseType.OneTime,
       spentTypeKey: -1,
       filteredOptions: {},
       textValue:'',
-      activeTab:ActiveTab.OneTime
+      activeTab:ActiveTab.OneTime,
     }
   }
+
 
   handlePay = () => {
     $('input').blur();
@@ -89,7 +67,6 @@ export default class App extends Component {
   }
   
   handleSpentTypeChanged = (key) => {
-    console.log('handleSpentTypeChanged')
     this.setState({spentTypeKey: key});
   }
 
@@ -106,10 +83,13 @@ updateFilter = (evt) => {
        value = evt.target.value;
    }
    let filteredOptions = {};
-   for(var key in SpenTypes){
-       const item = SpenTypes[key];
-       if (item.replace(/[^\x00-\x7F]/g, "").substr(1).toUpperCase().startsWith(value.toUpperCase()) || value =='') {
-          filteredOptions[key] = item;
+   for(var key in this.props.spentTypes){
+       if (this.props.spentTypes[key][1])
+       {
+        const item = this.props.spentTypes[key][0];
+        if (item.replace(/[^\x00-\x7F]/g, "").substr(1).toUpperCase().startsWith(value.toUpperCase()) || value =='') {
+           filteredOptions[key] = item;
+       }
    }
 
    this.setState({
@@ -128,7 +108,6 @@ handleActiveTabChanged = (activeTab) =>
 }
 
 handleClick = (key) => {
-  console.log('handleClick')
   this.handleSpentTypeChanged(key)
   this.setState({textValue: this.state.filteredOptions[key]})
   this.hideList();
@@ -168,14 +147,12 @@ handleKeyPressedForNumber= (e) => {
 }
 
 renderSelect(){
-  console.log('renderSelect')
   let displayList = Object.keys(this.state.filteredOptions).map((key, index) => {
       return (<div className='DataListOption' data-id={key} onClick={()=>this.handleClick(key)} >{this.state.filteredOptions[key]}</div>)
     })
 
 
   const  { textValue } = this.state;
-  console.log(textValue)
   return(
     <div className="dropdown">
       <input className="dropbtn" type="text" value={textValue}  onKeyPress={this.handleKeyPressedForList} 
@@ -209,8 +186,8 @@ renderSelect(){
        handlePayCallback={this.handlePay}
        handleActiveTabChangedCallBack = {this.handleActiveTabChanged}
        activeTab={this.state.activeTab}
-       infoType={this.state.infoType}>
-
+       infoType={this.state.infoType}
+       spentTypes={this.props.spentTypes}>
       </MonthlyExpensesPage>
       </div>
     );

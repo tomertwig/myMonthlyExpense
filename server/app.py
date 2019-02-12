@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+# encoding=utf8
+# decoding=utf8
+
 from flask import *
 from json import *
 from flask_cors import CORS, cross_origin
@@ -21,12 +26,25 @@ except Exception as e:
 db.connect_db(DATABASE)
 EXPENSES_TABLE = 'with_user_id' # 'tom'
 MONTHLY_EXPENSES_TABLE = 'monthly'
+USER_SPENT_TYPES = 'user_spent_types'
 USERS_TABLE = 'users2' # 'tom'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
+#db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
+#db.create_transactional_table(USER_SPENT_TYPE, ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'])
+db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'],['integer', 'integer',' VARCHAR(32)', 'TINYINT(1)'], primary_key='spent_type_id')
+#db.drop_table(USER_SPENT_TYPES)
+#db.add_coulmn(USER_SPENT_TYPES, 'is_valid', 'TINYINT(1)' )
+
+#db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
+
 #db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
 @app.route('/deleteLatestTransaction')
+
+
+
+
 def deleteLatestTransaction():
     print 'deleteLatestTransaction'
 
@@ -230,6 +248,76 @@ def all_expenses():
         print result
 
     jsonResp = {'result': result}
+    return jsonify(jsonResp)
+
+
+@app.route('/spent_types')
+def spent_types():
+    user_id = request.args.get('user_id')
+    jsonResp = {'spentTypes': {}}
+
+    fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
+    print fetched_spent_type
+
+    spent_types = {s['spent_type_id']: [s['spent_type_name'], s['is_valid']] for s in fetched_spent_type }
+    jsonResp = {'spentTypes': spent_types}
+
+    return jsonify(jsonResp)
+
+@app.route('/add_new_type')
+def add_new_type():
+    user_id = request.args.get('user_id')
+    spent_type = request.args.get('spent_type')
+
+    spenTypes = {
+    1:'🛒 Supermarket',
+    2:'🍺 Bar',
+    3:'🍽️ Restaurant',
+    4:'🏥 SuperPharm',
+    5:'🚌 Rav-Kav',
+    6:'🥤 Tamara',
+    8:'🚕 Taxi',
+    11:'🚗 Car2Go',
+    13:'🏡 Rent Bill',
+    14:'🌐 Internet Bill',
+    15:'🏋️️ GYM',
+    16:'🏘️ House Committee',
+    17:'👩‍🍳 Gas Bill',
+    18:'🚰 Water Bill',
+    19:'🔌 Electricity Bill',
+    20:'🏢 Arnona Bill',
+    21:'☕ Coffee',
+    22:'⚽ Soccer',
+    23:'🍀 Green',
+    24:'🥂 Events',
+    25:'👜 Fashion',
+    26:'💅 Pedicure',
+    100:'❓ Other',
+    }
+
+    for k,v in spenTypes.iteritems():
+        pass
+        #db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
+
+
+    fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
+    next_id = fetched_spent_type[-1]['spent_type_id'] + 1 if fetched_spent_type else 0
+    db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,next_id,spent_type, True])  
+
+    jsonResp = {'result': 'success'}
+
+    return jsonify(jsonResp)
+
+@app.route('/remove_type')
+def remove_type():
+    print 'remove_type......'
+
+    user_id = request.args.get('user_id')
+    spent_type_id = request.args.get('spent_type_id')
+    db.update_by(USER_SPENT_TYPES, ['is_valid'], [False], 'user_id=' + str(user_id) +' And  spent_type_id=' + str(spent_type_id) )
+    jsonResp = {'result': 'success'}
+    fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
+    print fetched_spent_type
     return jsonify(jsonResp)
 
 if __name__ == '__main__':

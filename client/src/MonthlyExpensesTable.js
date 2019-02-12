@@ -1,17 +1,23 @@
 import React from  'react'
 import './App.css';
-import {SpenTypes, ActiveTab} from './MainPage'
+import {ActiveTab} from './MainPage'
 import {serverUrl} from './Browse'
 
 class MonthlyExpensesTable extends React.Component {
     constructor(props) {
         super(props)
+        console.log('props.MonthlyExpensesTable')
+        console.log(props.expenses)
+        console.log(props.spentTypes)
+
         this.props = {
             userID: props.userID,
             expenses: props.expenses,
             writePermissions:props.writePermissions,
-            fetchExpensesCallback:props.fetchExpensesCallback
+            fetchExpensesCallback:props.fetchExpensesCallback,
+            spentTypes:props.spentTypes
         }
+
         this.state = {
             displayAll:false,
             activeTab: props.activeTab,
@@ -19,10 +25,13 @@ class MonthlyExpensesTable extends React.Component {
     }
 
     componentWillReceiveProps(props)
-    {
+    {   
+        const activeTab =  props.activeTab? props.activeTab : this.state.activeTab 
         this.setState({
-            activeTab:props.activeTab,
-            chart: props.chart
+            activeTab,
+            chart: props.chart,
+            spentTypes:props.spentTypes
+
         })
     
     }
@@ -64,6 +73,8 @@ class MonthlyExpensesTable extends React.Component {
     }
     renderTable(){
        const expenses = this.props.expenses
+        console.log(this.props.spentTypes)
+        console.log('this.props.spentTypes tableee')
 
        return( <table className='paleBlueRows'>
         <thead>
@@ -90,7 +101,7 @@ class MonthlyExpensesTable extends React.Component {
                      <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.state.activeTab)}>❌</span>: ''} 
                   {expense[0]}
                   </td>
-                  <td className='spentType'>{SpenTypes[expense[1]]} </td>
+                  <td className='spentType'>{this.props.spentTypes[expense[1]] ? this.props.spentTypes[expense[1]][0] : null } </td>
                   <td>{expense[2]}</td>
                 </tr>)
         })

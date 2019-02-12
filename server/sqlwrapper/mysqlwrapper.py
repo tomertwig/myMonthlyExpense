@@ -82,6 +82,27 @@ class mysqlwrapper():
         return dict()
 
     @__configuration_required
+    def fetch_all_user_id(self, tablename, user_id):
+        """fetches all the data from a given table
+		function definition:
+		fetch_all(tablename)
+		example: db.fetch_all('users')
+		return_type: returns list of dictionaries (i.e the whole table)
+		"""
+
+        query = 'select * from ' + tablename + ' WHERE '+  str(user_id) + ' = user_id '
+        try:
+            self.__cur.execute(query)
+        except Exception as e:
+            self.__conn.rollback()
+            raise e
+        fetcheddata = self.__cur.fetchall()
+        if fetcheddata:
+            columns = self.__helper._functions__desc_to_columns(self.__cur.description)
+            fetcheddata = self.__helper._functions__pgtodict(fetcheddata, columns)
+            return fetcheddata
+        return dict()
+    @__configuration_required
     def fetch_first(self, tablename):
         """fetches first data point from a given table
 		function definition:
@@ -389,7 +410,8 @@ class mysqlwrapper():
         else:
             query = 'Update ' + tablename + ' Set ' + ", ".join(placeholder) + ' where ' + where
         try:
-
+            print query
+            print values
             self.__cur.execute(query, values)
             self.__conn.commit()
         except Exception as e:

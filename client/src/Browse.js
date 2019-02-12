@@ -7,6 +7,7 @@ import $ from "jquery";
 
 import MonthlyExpensesPage from './MonthlyExpensesPage';
 import MainPage from './MainPage';
+import EditTypePage from './editTypePage';
 var SHA256 = require("crypto-js/sha256");
 const hostName = window.location.hostname
 const serverPort = '5000'
@@ -15,6 +16,21 @@ const clientPort = '3000'
 export const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
 export const clientUrl = 'http://' + hostName + ':' + clientPort +'/'
 
+
+export const getSpentTypes= (userID) => {
+    let serverSpentTypesUrl = serverUrl  + 'spent_types?user_id=' +userID 
+  
+    console.log(serverSpentTypesUrl)
+    return fetch(serverSpentTypesUrl, {
+        method: 'GET',
+        dataType: 'json',
+    })
+        .then(r => r.json())
+        .then(r => {
+        return r
+        })
+        .catch(err => console.log(err))
+  }
 
 export default class Auth extends Component {
   constructor() {
@@ -28,7 +44,19 @@ export default class Auth extends Component {
         password:'',
         userID,
     }
+    this.fetchSpentTypes()
   }
+    
+  fetchSpentTypes = () => {
+    console.log('fetchSpentTypes')
+    const spetTypes = getSpentTypes(this.state.userID)
+    spetTypes.then(result => {
+      console.log(result.spentTypes)
+      console.log('result.spentTypes browsss')
+
+      this.setState({spentTypes:result.spentTypes})
+    })
+}
   
   handleUserName = (e) => {  
     this.setState({userName:e.target.value})
@@ -106,6 +134,15 @@ renderCalenderButton()
     )  
 }
 
+renderPlusButton()
+{
+    return(
+        <img className="iconButton" src={require('./edit.png')} width="42" height="42"/>
+    )  
+}
+
+
+
 renderMonthExpensesTable()
 {
     const startMonth = 1
@@ -133,7 +170,8 @@ renderMonthExpensesTable()
                   <MonthlyExpensesPage
                     userID={this.state.userID}
                     mounth={month} 
-                    year={year}>
+                    year={year}
+                    spentTypes={this.state.spentTypes}>
                   </MonthlyExpensesPage>
         )}/>)
       }
@@ -170,7 +208,16 @@ renderCalenderIcon()
 
     }
 }
+
+renderPlusIcon()
+{
+    const isPlusActive = window.location.href.includes(clientUrl+'edit_types')
+    return (isPlusActive ? <a className={'active'}> <i> {this.renderPlusButton()}</i></a>:
+     <a href={clientUrl+'edit_types'}><i> {this.renderPlusButton()}</i></a> )
+}
 render() {
+    console.log('render BROWSE')
+    console.log(this.state.spentTypes)
 
     if (!this.state.userID)
     {
@@ -189,16 +236,20 @@ render() {
         <div className="icon-bar">
         {this.renderHomeIcon()}
         {this.renderCalenderIcon()}
+        {this.renderPlusIcon()}
         </div>
         <BrowserRouter>
             <div>
                 <Route exact={true} path='/' render={() => (
-                        <MainPage userID={this.state.userID}></MainPage>
+                        <MainPage userID={this.state.userID} spentTypes={this.state.spentTypes}></MainPage>
                 )}/>
                 <Route exact={true} path='/history' render={() => (
                         <HistoryPage userID={this.state.userID} ></HistoryPage>
                 )}/>
                 {this.renderMonthExpensesTable()}
+                <Route exact={true} path='/edit_types' render={() => (
+                        <EditTypePage userID={this.state.userID} spentTypes={this.state.spentTypes} ></EditTypePage>
+                )}/>
             </div>
         </BrowserRouter>
     </div>)

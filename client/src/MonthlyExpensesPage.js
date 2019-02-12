@@ -1,8 +1,7 @@
 import React from  'react'
 import './App.css';
-import $ from "jquery";
 
-import {SpenTypes, ActiveTab, InfoType} from './MainPage'
+import {ActiveTab, InfoType} from './MainPage'
 import {serverUrl} from './Browse'
 import { Chart } from "react-google-charts";
 import MonthlyExpensesTable from './MonthlyExpensesTable'
@@ -10,14 +9,14 @@ import MonthlyExpensesTable from './MonthlyExpensesTable'
 class MonthlyExpensesPage extends React.Component {
     constructor(props) {
         super(props)
-
         this.props = {
             userID:props.userID,
             mounth:props.mounth,
             year:props.year,
             writePermissions:props.writePermissions,
             handlePayCallback:props.handlePayCallback,
-            handleActiveTabChangedCallBack:props.handleActiveTabChangedCallBack
+            handleActiveTabChangedCallBack:props.handleActiveTabChangedCallBack,
+            spentTypes: props.spentTypes
         }
 
         this.state = {
@@ -37,20 +36,20 @@ class MonthlyExpensesPage extends React.Component {
     componentWillReceiveProps(props)
     {
         let infoType = props.infoType != null ? props.infoType :this.state.infoType
-
+        let activeTab = props.activeTab != null ? props.activeTab :this.state.activeTab
+        let spentTypes = props.spentTypes != null ? props.spentTypes :this.state.spentTypes
         this.setState({
-            activeTab:props.activeTab,
-            infoType
+            activeTab,
+            infoType,
+            spentTypes
         })
     
         this.fetchExpenses()
     }
 
     fetchExpenses = () => {
-        console.log('fetchExpenses')
         let expenses = this.getExpenses();
         expenses.then(result => {
-          console.log(result)
           this.setState({ monthlyExpensesData:result.monthlyExpensesData,  monthlyExpensesSum:result.monthlyExpensesSum,
             oneTimeExpensesData:result.oneTimeExpensesData,  oneTimeExpensesSum:result.oneTimeExpensesSum,
             unusualExpensesData:result.unusualExpensesData, unusualExpensesSum:result.unusualExpensesSum})
@@ -58,12 +57,11 @@ class MonthlyExpensesPage extends React.Component {
       }
 
     getExpenses(){
-    let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + this.props.userID +'&month='+this.props.mounth +'&year=' +this.props.year
-    console.log(serverExpensesUrl)
-    return fetch(serverExpensesUrl, {
-        method: 'GET',
-        dataType: 'json',
-    })
+        let serverExpensesUrl = serverUrl  + 'expenses?user_id=' + this.props.userID +'&month='+this.props.mounth +'&year=' +this.props.year
+        return fetch(serverExpensesUrl, {
+            method: 'GET',
+            dataType: 'json',
+        })
         .then(r => r.json())
         .then(r => {
         return r
@@ -102,10 +100,6 @@ class MonthlyExpensesPage extends React.Component {
             }
         }
     }
-
-
-
-
 
     renderPaiChart = (data)=>
     {
@@ -194,13 +188,20 @@ class MonthlyExpensesPage extends React.Component {
                 expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData).concat(this.state.monthlyExpensesData)
                 break;             
         }
+        console.log(this.props.spentTypes)
+        console.log('this.props.spentTypes -page')
+
         for (let i = 0; i < expenses.length; i++)
         {   
             const key = expenses[i][1];
-            if (! (SpenTypes[key] in sumup)){
-                sumup[SpenTypes[key]] = 0
+            const type = this.props.spentTypes[key] ? this.props.spentTypes[key][0] : null
+            if (type){
+                if (! (type in sumup)){
+                    sumup[type]= 0
+                }
+                sumup[type] += expenses[i][2]
             }
-            sumup[SpenTypes[key]] += expenses[i][2]
+
         }
 
         const data = [['Task', 'Hours per Day']]
@@ -248,6 +249,9 @@ class MonthlyExpensesPage extends React.Component {
     renderTables()
     {  
         let expenses
+        console.log('this.state.renderTablesrenderTablesrenderTablesrenderTables')
+        console.log(this.state.activeTab)
+        console.log(this.props.spentTypes)
 
         switch (this.state.activeTab){
             case ActiveTab.OneTime: 
@@ -274,7 +278,8 @@ class MonthlyExpensesPage extends React.Component {
                  expenses={expenses}
                  writePermissions={this.props.writePermissions}
                  activeTab={this.state.activeTab}
-                 fetchExpensesCallback={this.fetchExpenses}>
+                 fetchExpensesCallback={this.fetchExpenses}
+                 spentTypes={this.props.spentTypes}>
                  </MonthlyExpensesTable> 
         )
     }
