@@ -126,7 +126,6 @@ class MonthlyExpensesPage extends React.Component {
             backgroundColor:'#f1f1f1',
             fontName: "Roboto"
           };
-        console.log(data)
        return (
         <Chart
             chartType="PieChart"
@@ -141,12 +140,6 @@ class MonthlyExpensesPage extends React.Component {
     }
 
     renderTableChart = (data) => {
-        console.log('data.shift()')
-        console.log(data.shift())
-
-        console.log(data)
-
-
         data.sort(function(a,b){return a[1]<b[1];});
         return( <table className='paleBlueRows'>
          <thead>
@@ -158,8 +151,6 @@ class MonthlyExpensesPage extends React.Component {
          <tbody>
          {
          data.map((element, idx) => {
-             console.log(idx)
-             console.log(element)
             return  (<tr key={idx}>
                     <td className='spentType'>{data[idx][0]} </td>
                     <td>{data[idx][1]}</td>
@@ -188,8 +179,6 @@ class MonthlyExpensesPage extends React.Component {
                 expenses = this.state.oneTimeExpensesData.concat(this.state.unusualExpensesData).concat(this.state.monthlyExpensesData)
                 break;             
         }
-        console.log(this.props.spentTypes)
-        console.log('this.props.spentTypes -page')
 
         for (let i = 0; i < expenses.length; i++)
         {   
@@ -219,9 +208,7 @@ class MonthlyExpensesPage extends React.Component {
     }
 
     renderSumupTable(){
-        console.log('this.state.activeTab')
 
-        console.log(this.state.activeTab)
         return (
         <table className='paleBlueRows'>
             <thead>
@@ -249,9 +236,6 @@ class MonthlyExpensesPage extends React.Component {
     renderTables()
     {  
         let expenses
-        console.log('this.state.renderTablesrenderTablesrenderTablesrenderTables')
-        console.log(this.state.activeTab)
-        console.log(this.props.spentTypes)
 
         switch (this.state.activeTab){
             case ActiveTab.OneTime: 
@@ -312,9 +296,7 @@ class MonthlyExpensesPage extends React.Component {
                 buttonText = 'Invalid'
                 break
         }
-        console.log('this.state.activeTab')
 
-        console.log(this.state.activeTab)
         if (this.state.activeTab === ActiveTab.Total)
         {
             return <button className='inputButton' disabled> <div className='payText' > {buttonText} </div></button>

@@ -29,9 +29,7 @@ class MonthlyExpensesTable extends React.Component {
         const activeTab =  props.activeTab? props.activeTab : this.state.activeTab 
         this.setState({
             activeTab,
-            chart: props.chart,
-            spentTypes:props.spentTypes
-
+            chart: props.chart
         })
     
     }

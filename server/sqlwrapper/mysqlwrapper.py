@@ -283,7 +283,7 @@ class mysqlwrapper():
             raise e
 
     @__configuration_required
-    def create_table(self, tablename, columns, data_types, primary_key):
+    def create_table(self, tablename, columns, data_types, primary_key=None):
         """ creates a table in the database
 		function definition:
 		create_table(tablename,columns,data_types,primary_key)
@@ -301,9 +301,6 @@ class mysqlwrapper():
 
         if (len(columns) != len(data_types)):
             raise CountDontMatchError("Column count and data types count don't match")
-
-        if primary_key not in columns:
-            raise NoPrimaryKeyError("Primary key not in the column list")
 
         for x in data_types:
             if (self.__helper._functions__isvalid_dtype(x) == False):

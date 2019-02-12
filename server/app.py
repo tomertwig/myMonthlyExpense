@@ -33,7 +33,7 @@ db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
 #db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
 #db.create_transactional_table(USER_SPENT_TYPE, ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'])
-db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'],['integer', 'integer',' VARCHAR(32)', 'TINYINT(1)'], primary_key='spent_type_id')
+db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'],['integer', 'integer',' VARCHAR(32)', 'TINYINT(1)'])
 #db.drop_table(USER_SPENT_TYPES)
 #db.add_coulmn(USER_SPENT_TYPES, 'is_valid', 'TINYINT(1)' )
 
@@ -296,8 +296,7 @@ def add_new_type():
     }
 
     for k,v in spenTypes.iteritems():
-        pass
-        #db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
+        db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
 
 
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
