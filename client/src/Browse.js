@@ -78,10 +78,10 @@ export default class Auth extends Component {
             this.setState({password:''})
             return;
         }
-
         const cookies = new Cookies();
         cookies.set('user_id', json.userID, { path: '/' });
         this.setState({userID:json.userID})
+        this.fetchSpentTypes()
     })
   }
 

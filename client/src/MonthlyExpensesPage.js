@@ -151,6 +151,7 @@ class MonthlyExpensesPage extends React.Component {
          <tbody>
          {
          data.map((element, idx) => {
+            if (idx == 0) return null
             return  (<tr key={idx}>
                     <td className='spentType'>{data[idx][0]} </td>
                     <td>{data[idx][1]}</td>

@@ -183,6 +183,37 @@ def sign_in():
     user_id = _get_next_unique_user_id()
     
     db.insert(USERS_TABLE, ['user_name', 'password', 'user_id'], [user_name, password, user_id])  
+
+    spenTypes = {
+    1:'🛒 Supermarket',
+    2:'🍺 Bar',
+    3:'🍽️ Restaurant',
+    4:'🏥 SuperPharm',
+    5:'🚌 Rav-Kav',
+    6:'🥤 Tamara',
+    8:'🚕 Taxi',
+    11:'🚗 Car2Go',
+    13:'🏡 Rent Bill',
+    14:'🌐 Internet Bill',
+    15:'🏋️️ GYM',
+    16:'🏘️ House Committee',
+    17:'👩‍🍳 Gas Bill',
+    18:'🚰 Water Bill',
+    19:'🔌 Electricity Bill',
+    20:'🏢 Arnona Bill',
+    21:'☕ Coffee',
+    22:'⚽ Soccer',
+    23:'🍀 Green',
+    24:'🥂 Events',
+    25:'👜 Fashion',
+    26:'💅 Pedicure',
+    100:'❓ Other',
+    }
+
+    for k,v in spenTypes.iteritems():
+        db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
+
+
     jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
 
@@ -250,38 +281,6 @@ def spent_types():
 def add_new_type():
     user_id = request.args.get('user_id')
     spent_type = request.args.get('spent_type')
-
-    spenTypes = {
-    1:'🛒 Supermarket',
-    2:'🍺 Bar',
-    3:'🍽️ Restaurant',
-    4:'🏥 SuperPharm',
-    5:'🚌 Rav-Kav',
-    6:'🥤 Tamara',
-    8:'🚕 Taxi',
-    11:'🚗 Car2Go',
-    13:'🏡 Rent Bill',
-    14:'🌐 Internet Bill',
-    15:'🏋️️ GYM',
-    16:'🏘️ House Committee',
-    17:'👩‍🍳 Gas Bill',
-    18:'🚰 Water Bill',
-    19:'🔌 Electricity Bill',
-    20:'🏢 Arnona Bill',
-    21:'☕ Coffee',
-    22:'⚽ Soccer',
-    23:'🍀 Green',
-    24:'🥂 Events',
-    25:'👜 Fashion',
-    26:'💅 Pedicure',
-    100:'❓ Other',
-    }
-
-    for k,v in spenTypes.iteritems():
-        pass
-         #TODO need to move this to the sign in page
-        #db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,k,v, True])  
-
 
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
     next_id = fetched_spent_type[-1]['spent_type_id'] + 1 if fetched_spent_type else 0
