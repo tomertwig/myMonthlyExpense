@@ -108,17 +108,8 @@ def pay():
     jsonResp = {'result': 'succeeded'}
     return jsonify(jsonResp)
 
-def _db_heartbeat():
-    try:
-      print '_db_heartbeat'
-      db.fetch_first(EXPENSES_TABLE)
-    except Exception as e:
-        exit()
-
-
 @app.route('/expenses')
 def getLestExpenses():
-    _db_heartbeat()
 
     user_id = request.args.get('user_id', default=0, type=int)
     month = request.args.get('month', default=0, type=int)
