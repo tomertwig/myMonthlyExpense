@@ -309,10 +309,26 @@ def spent_types():
 def add_new_type():
     user_id = request.args.get('user_id')
     spent_type = request.args.get('spent_type')
+    if True:
+        table = EXPENSES_TABLE
+        fetched_mountly_data = db.fetch_last_rows(table, user_id) or ()
 
-    fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
-    next_id = fetched_spent_type[-1]['spent_type_id'] + 1 if fetched_spent_type else 0
-    db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id,next_id,spent_type, True])  
+        ts = None
+        index = 0
+        for f in fetched_mountly_data:
+            if f[2] == 100: # 4 unusual
+                ts = f[0]
+                break
+
+        db.update_by(EXPENSES_TABLE, ['spent_type'], [102], where='user_id = ' + str(user_id) + " and ts= ' " + str(ts) + "'")
+
+    else:
+        user_id = request.args.get('user_id')
+        spent_type = request.args.get('spent_type')
+
+        fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
+        next_id = fetched_spent_type[-1]['spent_type_id'] + 1 if fetched_spent_type else 0
+        db.insert(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'], [user_id, next_id, spent_type, True])  
 
     jsonResp = {'result': 'success'}
 
