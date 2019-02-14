@@ -226,6 +226,7 @@ class mysqlwrapper():
         if type(where) != str:
             raise NotAStringError("please provide a valid where clause")
         query = 'delete from ' + tablename + ' where ' + where
+        print query
         try:
             self.__cur.execute(query)
             self.__conn.commit()

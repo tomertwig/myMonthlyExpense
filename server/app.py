@@ -40,16 +40,44 @@ db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name'
 #db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
 
 #db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
-@app.route('/deleteLatestTransaction')
 
+@app.route('/deleteTransaction')
 def deleteLatestTransaction():
 
     user_id = request.args.get('user_id', default=0, type=int)
     expenses_type =  request.args.get('expenses_type', default=-1, type=int)
+    idx =  request.args.get('idx', default=-1, type=int)
+    assert idx >= 0
     assert expenses_type >= 0
+    
     table = EXPENSES_TABLE if expenses_type < 2 else MONTHLY_EXPENSES_TABLE
+    month = request.args.get('month', default=0, type=int)
+    year = request.args.get('year', default=0, type=int)
+    fetched_mountly_data = db.fetch_last_rows(table, user_id, month, year) or ()
+    
+    print 'idxidxidxidxidx'
+    print expenses_type
 
-    db.delete_latest_transaction(table, user_id)
+    print idx
+
+    ts = None
+    index = 0
+    for f in fetched_mountly_data:
+        if index == idx:
+           ts = f[0]
+           print 'found ts'
+           print ts
+           break
+        if expenses_type == 2:
+            index+= 1
+        if expenses_type == 1 and f[4]: # 4 unusual
+           index+= 1
+        if expenses_type == 0 and not f[4]: 
+            index+= 1
+     
+    assert ts
+
+    db.delete_by(table, where='user_id = ' + str(user_id) + " and ts= ' " + str(ts) + "'")
     return ''
 
 

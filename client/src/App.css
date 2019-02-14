@@ -319,6 +319,23 @@ margin-top: 4px;
 margin-right: auto;
 }
 
+.trashIcons{
+  display: flex;
+  flex-direction: row;
+}
+
+.iconButton1{
+
+  margin-left: 5px;
+  margin-top: 2px;
+
+  }
+  
+  .Date{
+    margin-left: 10px;
+    margin-top: 2px;
+
+  }
 .icon-bar {
   width: 100%;
   background: rgb(133, 161, 175);

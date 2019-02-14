@@ -35,11 +35,13 @@ class MonthlyExpensesTable extends React.Component {
     }
 
 
-    handleDeleteLatestTransaction = (activeTab) => {
+    handleDeleteLatestTransaction = (activeTab, idx) => {
         console.log('handleDeleteLatestTransaction')
+        console.log(idx)
+
         console.log(activeTab)
         if (window.confirm("Are you sure you want to delete this transaction?")) {
-          fetch(serverUrl + 'deleteLatestTransaction?user_id=' + this.props.userID +'&expenses_type='+this.state.activeTab,{
+          fetch(serverUrl + 'deleteTransaction?user_id=' + this.props.userID +'&expenses_type='+this.state.activeTab +'&idx=' +idx,{
             method: 'GET',
             dataType: 'json'
           }).then(() => {
@@ -69,15 +71,31 @@ class MonthlyExpensesTable extends React.Component {
             return null;
         }
     }
+
+    handleDelete = (deleteStatus) => {
+        console.log('handleDelete');
+        this.setState({delete:deleteStatus});
+    }
+
     renderTable(){
        const expenses = this.props.expenses
         console.log(this.props.spentTypes)
         console.log('this.props.spentTypes tableee')
+        
+       let renderTrash = null;
+       if (this.props.writePermissions)
+       {
+        renderTrash = (!this.state.delete?  <span  onClick={() => this.handleDelete(true)}> <img className="iconButton1" src={require('./remove.png')} width="18" height="18"/> </span> :
+            <span onClick={() => this.handleDelete(false)}> <img className="iconButton1" src={require('./left_icon.png')}  width="18" height="18"/></span>)
+       }
 
        return( <table className='paleBlueRows'>
         <thead>
           <tr>
-            <th>Date</th>
+            <th className='trashIcons'>
+                {renderTrash}               
+                <div className='Date'>Date</div>                
+            </th>
             <th>Type</th>
             <th>Expense</th>
           </tr>
@@ -95,8 +113,8 @@ class MonthlyExpensesTable extends React.Component {
 
          return (<tr key={idx}>
                   <td className= "dateTable">
-                  {this.props.writePermissions && idx === 0 ?
-                     <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.state.activeTab)}>❌</span>: ''} 
+                  {this.state.delete ?
+                     <span className='deleteLatestTransaction' onClick={() => this.handleDeleteLatestTransaction(this.state.activeTab, idx)}>❌</span>: ''} 
                   {expense[0]}
                   </td>
                   <td className='spentType'>{this.props.spentTypes && this.props.spentTypes[expense[1]] ? this.props.spentTypes[expense[1]][0] : null } </td>
