@@ -186,8 +186,8 @@ def login():
 
     jsonResp = {'result': result, 'userID': user_id}
 
-    #email1 = 'tomertwig@gmail.com'
-    #db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[user_id, email1])
+    email1 = 'michalsolo10@gmail.com'
+    db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[user_id, email1])
 
     return jsonify(jsonResp)
 
