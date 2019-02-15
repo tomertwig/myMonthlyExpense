@@ -43,7 +43,12 @@ db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name'
 
 #db.add_coulmn(USERS_TABLE, 'user_email', 'VARCHAR(64)')
 
+db.drop_table(USER_ID_TO_EMAILS)
 db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', 'VARCHAR(32)',' VARCHAR(32)'])
+db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
+db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
+
+
 
 #db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
 
@@ -331,7 +336,7 @@ def add_new_type():
 @app.route('/remove_type')
 def remove_type():
     print 'remove_type......'
-
+    632566
     user_id = request.args.get('user_id')
     spent_type_id = request.args.get('spent_type_id')
     db.update_by(USER_SPENT_TYPES, ['is_valid'], [False], 'user_id=' + str(user_id) +' And  spent_type_id=' + str(spent_type_id) )
