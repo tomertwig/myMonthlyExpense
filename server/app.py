@@ -12,6 +12,7 @@ from sqlwrapper import mysqlwrapper
 import random
 from datetime import datetime
 import os
+from email_sender import EmailSender
 
 DATABASE = 'test123'
 app = Flask(__name__)
@@ -325,3 +326,13 @@ def remove_type():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
+
+
+@app.route('/send_weekly_reports')
+def send_weekly_reports():
+    emails_to_data = (['tomertwig@gmail.com','tomertwig@gmail.com'],'hello world !!!')
+    sender = EmailSender(emails_to_data)
+    sender.send()
+
+    
+    return emails_to_data

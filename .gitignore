@@ -21,3 +21,6 @@
 /client/npm-debug.log*
 /client/yarn-debug.log*
 /client/yarn-error.log*
+.gitsecret/keys/random_seed
+
+/server/email_conf.txt

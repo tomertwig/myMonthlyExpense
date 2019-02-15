@@ -14,7 +14,6 @@ RUN apt-get install libmysqlclient-dev -y
 RUN pip install mysql
 RUN pip install mysql-connector-python  
 RUN pip install psycopg2 
-
 RUN pip install -r requirements.txt
 
 COPY app.py /app

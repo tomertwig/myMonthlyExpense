@@ -31,7 +31,8 @@ class mysqlwrapper():
         def isconfigured(self, *args, **kwargs):
             if (self.__cur == None):
                 raise NullConnectionError("Not connected to mysql server")
-
+            self.__conn.ping(True)
+            self.__cur = self.__conn.cursor()
             return f(self, *args, **kwargs)
 
         return isconfigured
