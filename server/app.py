@@ -167,6 +167,10 @@ def getLestExpenses():
      'unusualExpensesSum': unusual_data_sum,
      'oneTimeExpensesSum': one_time_expenses_sum}
 
+    f = db.fetch_all(USER_ID_TO_EMAILS)
+    print 'tomeormoermpoerneipnpien'
+    print f
+
     return jsonify(jsonResp)
 
 @app.route('/login')
