@@ -11,6 +11,7 @@ services:
       - NODE_ENV=development
   server:
     build: ./server
+    restart: always        
     volumes: ['./server:/app']
     links:
       - db
@@ -21,7 +22,6 @@ services:
 
   db:
     image: mysql:5.7
-    restart: always 
     ports:
       - "32000:3306"
     environment:

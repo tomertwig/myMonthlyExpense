@@ -13,6 +13,7 @@ import random
 from datetime import datetime
 import os
 from email_sender import EmailSender
+from datetime import timedelta
 
 DATABASE = 'test123'
 app = Flask(__name__)
@@ -29,6 +30,7 @@ EXPENSES_TABLE = 'with_user_id' # 'tom'
 MONTHLY_EXPENSES_TABLE = 'monthly'
 USER_SPENT_TYPES = 'user_spent_types'
 USERS_TABLE = 'users2' # 'tom'
+USER_ID_TO_EMAILS = 'USER_ID_TO_EMAILS'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
@@ -37,6 +39,11 @@ db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)'
 db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name', 'is_valid'],['integer', 'integer',' VARCHAR(32)', 'TINYINT(1)'])
 #db.drop_table(USER_SPENT_TYPES)
 #db.add_coulmn(USER_SPENT_TYPES, 'is_valid', 'TINYINT(1)' )
+
+
+#db.add_coulmn(USERS_TABLE, 'user_email', 'VARCHAR(64)')
+
+db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', 'VARCHAR(32)',' VARCHAR(32)'])
 
 #db.create_table('spent_types', ['user_id', 'spent_type_id', 'spent_type_name'],['integer', 'integer',' VARCHAR(32)'], primary_key='user_id')
 
@@ -178,6 +185,11 @@ def login():
         user_id = fetched_data[0]['user_id']
 
     jsonResp = {'result': result, 'userID': user_id}
+
+    email1 = 'tomertwig@gmail.com'
+    email2 = 'yael.reich123@gmail.com'
+    db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[user_id, email1,email2])
+
     return jsonify(jsonResp)
 
 def _get_next_unique_user_id():
@@ -200,9 +212,10 @@ def _get_next_unique_user_id():
 def sign_in():
     user_name = request.args.get('user_name')
     password = request.args.get('password')
+    user_email = request.args.get('user_email')
     user_id = _get_next_unique_user_id()
     
-    db.insert(USERS_TABLE, ['user_name', 'password', 'user_id'], [user_name, password, user_id])  
+    db.insert(USERS_TABLE, ['user_name', 'password', 'user_id', 'user_email'], [user_name, password, user_id, user_email])  
 
     spenTypes = {
     1:'🛒 Supermarket',
@@ -324,15 +337,76 @@ def remove_type():
     fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
     return jsonify(jsonResp)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+def _get_weekly_data(user_id):
+    today = datetime.today()
+    year = today.year
+    month = today.month
+    prev_month = 12 if month == 1 else month-1
+    prev_year = year - 1 if prev_month == 12 else year
+    fetched_curr_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, month, year) or ()
+    fetched_prev_mountly_data = db.fetch_last_rows(EXPENSES_TABLE, user_id, prev_month, prev_year) or ()
+    fetched_mountly_data = fetched_curr_mountly_data +  fetched_prev_mountly_data
+    report = ""
+    sum = 0
+    now = datetime.now() 
+    last_week = now - timedelta(days=7)
+    privous_week = last_week - timedelta(days=7)
+    privous_week_sum = 0
+
+    last_week_expenses = []
+    for f in fetched_mountly_data:
+        if f[0] > last_week:
+            last_week_expenses.append((f[2],f[3],f[4]))
+            sum += f[3]
+        elif  f[0] > privous_week:
+            privous_week_sum += f[3]
+
+    print 'last_week_expenses'
+    print last_week_expenses
+
+    expens_to_sum ={}
+    for e in last_week_expenses:
+        if e[0] not in expens_to_sum:
+            expens_to_sum[e[0]] = 0
+        
+        expens_to_sum[e[0]] += e[1]
+    fetched_spent_type = db.fetch_all_user_id(USER_SPENT_TYPES, user_id) or ()
+
+    spent_types = {s['spent_type_id']:s['spent_type_name'] for s in fetched_spent_type }
+
+    report = 'Total expenses this week: ' + str(sum) + '\n Last week total expensess: ' + str(privous_week_sum) + '\n'
+
+    report += 'Expenses this week: \n'
+
+    for k,v  in expens_to_sum.iteritems():
+        report +=  str(spent_types[k]) + ':' + str(v) + '\n'
+
+    
+    return report
+
 
 
 @app.route('/send_weekly_reports')
 def send_weekly_reports():
-    emails_to_data = (['tomertwig@gmail.com','tomertwig@gmail.com'],'hello world !!!')
-    sender = EmailSender(emails_to_data)
-    sender.send()
-
+    fetched_data = db.fetch_all(USER_ID_TO_EMAILS)
     
-    return emails_to_data
+    print fetched_data
+    for f in fetched_data:
+        user_id = f['user_id']
+        emails = [f['email1']]
+        email2 = f['email2']
+        if email2:
+           emails.append(email2) 
+
+        data = _get_weekly_data(user_id)
+        print data
+        emails_to_data = [(emails,data)]
+        sender = EmailSender(emails_to_data)
+        sender.send_weekly_reports()
+    
+    jsonResp = {'result': 'success'}
+    return jsonify(jsonResp)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
