@@ -52,8 +52,7 @@ db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', '
 
 #db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
 
-f = db.fetch_all(USER_ID_TO_EMAILS)
-print f
+
 @app.route('/deleteTransaction')
 def deleteLatestTransaction():
 
@@ -317,9 +316,8 @@ def spent_types():
 
 @app.route('/add_new_type')
 def add_new_type():
-    db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
-    db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
-
+    f = db.fetch_all(USER_ID_TO_EMAILS)
+    print f
     user_id = request.args.get('user_id')
     spent_type = request.args.get('spent_type')
 
@@ -337,7 +335,6 @@ def add_new_type():
 @app.route('/remove_type')
 def remove_type():
     print 'remove_type......'
-    632566
     user_id = request.args.get('user_id')
     spent_type_id = request.args.get('spent_type_id')
     db.update_by(USER_SPENT_TYPES, ['is_valid'], [False], 'user_id=' + str(user_id) +' And  spent_type_id=' + str(spent_type_id) )
