@@ -49,6 +49,8 @@ db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', '
 
 #db.add_coulmn(EXPENSES_TABLE, 'unusual', 'TINYINT(1)' )
 
+f = db.fetch_all(USER_ID_TO_EMAILS)
+print f
 @app.route('/deleteTransaction')
 def deleteLatestTransaction():
 
