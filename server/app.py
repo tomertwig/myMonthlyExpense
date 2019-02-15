@@ -45,8 +45,8 @@ db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name'
 
 #db.drop_table(USER_ID_TO_EMAILS)
 db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', 'VARCHAR(32)',' VARCHAR(32)'])
-db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
-db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
+#db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
+#db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
 
 
 
