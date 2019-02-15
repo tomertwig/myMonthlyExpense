@@ -316,8 +316,6 @@ def spent_types():
 
 @app.route('/add_new_type')
 def add_new_type():
-    f = db.fetch_all(USER_ID_TO_EMAILS)
-    print f
     user_id = request.args.get('user_id')
     spent_type = request.args.get('spent_type')
 
