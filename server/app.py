@@ -30,7 +30,7 @@ EXPENSES_TABLE = 'with_user_id' # 'tom'
 MONTHLY_EXPENSES_TABLE = 'monthly'
 USER_SPENT_TYPES = 'user_spent_types'
 USERS_TABLE = 'users2' # 'tom'
-USER_ID_TO_EMAILS = 'USER_ID_TO_EMAILS2'
+USER_ID_TO_EMAILS = 'USER_ID_TO_EMAILS3'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
