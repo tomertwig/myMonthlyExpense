@@ -30,7 +30,7 @@ EXPENSES_TABLE = 'with_user_id' # 'tom'
 MONTHLY_EXPENSES_TABLE = 'monthly'
 USER_SPENT_TYPES = 'user_spent_types'
 USERS_TABLE = 'users2' # 'tom'
-USER_ID_TO_EMAILS = 'USER_ID_TO_EMAILS1'
+USER_ID_TO_EMAILS = 'USER_ID_TO_EMAILS2'
 db.create_transactional_table(EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_transactional_table(MONTHLY_EXPENSES_TABLE, ['user_id', 'spent_type','amount',],['integer', 'integer','integer'])
 db.create_table(USERS_TABLE, ['user_name', 'password','user_id',],['VARCHAR(20)', 'VARCHAR(64)','integer'], primary_key='user_name')
@@ -44,9 +44,9 @@ db.create_table(USER_SPENT_TYPES, ['user_id', 'spent_type_id', 'spent_type_name'
 #db.add_coulmn(USERS_TABLE, 'user_email', 'VARCHAR(64)')
 
 #db.drop_table(USER_ID_TO_EMAILS)
-db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', 'VARCHAR(32)',' VARCHAR(32)'])
-#db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
-#db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
+db.create_table(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],['integer', 'VARCHAR(32)',' VARCHAR(32)'], primary_key='user_id')
+db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1', 'email2'],[383135, 'yael.reich123@gmail.com', 'tomertwig@gmail.com'])
+db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'],[632566, 'mfichalsolo10@gmail.com'])
 
 
 
