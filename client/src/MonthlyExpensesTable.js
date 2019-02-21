@@ -26,7 +26,13 @@ class MonthlyExpensesTable extends React.Component {
 
     componentWillReceiveProps(props)
     {   
-        const activeTab =  props.activeTab? props.activeTab : this.state.activeTab 
+        console.log('componentWillReceiveProps')
+        console.log(props.activeTab)
+        console.log(this.state.activeTab)
+
+        const activeTab =  props.activeTab != null ? props.activeTab : this.state.activeTab 
+        console.log(activeTab)
+
         this.setState({
             activeTab,
             chart: props.chart
@@ -105,7 +111,7 @@ class MonthlyExpensesTable extends React.Component {
         expenses.map((expense, idx) => {
         if (idx >4){
           if (this.state.activeTab == ActiveTab.OneTime && !this.state.displayAll )
-            {
+            { 
              return null ;
             }
         }

@@ -75,16 +75,22 @@ def deleteLatestTransaction():
     ts = None
     index = 0
     for f in fetched_mountly_data:
-        if index == idx:
+        print  f[0]
+        print index
+        if index == idx and ((expenses_type == 1 and f[4]) or (expenses_type == 0 and not f[4]) or expenses_type == 2):
            ts = f[0]
            print 'found ts'
            print ts
            break
         if expenses_type == 2:
             index+= 1
+            print 'mount'
+
         if expenses_type == 1 and f[4]: # 4 unusual
-           index+= 1
+            print 'unusual'
+            index+= 1
         if expenses_type == 0 and not f[4]: 
+            print 'not unusual'
             index+= 1
      
     assert ts
@@ -377,7 +383,7 @@ def _get_weekly_data(user_id):
 
     spent_types = {s['spent_type_id']:s['spent_type_name'] for s in fetched_spent_type }
 
-    report = 'Total expenses this week: ' + str(sum) + '\n Last week total expensess: ' + str(privous_week_sum) + '\n'
+    report = 'Total expenses this week: ' + str(sum) + '\n Total expenses last week  : ' + str(privous_week_sum) + '\n'
 
     report += 'Expenses this week: \n'
 

@@ -37,6 +37,8 @@ class MonthlyExpensesPage extends React.Component {
     {
         let infoType = props.infoType != null ? props.infoType :this.state.infoType
         let activeTab = props.activeTab != null ? props.activeTab :this.state.activeTab
+        console.log('componentWillReceivePropscomponentWillReceiveProps')
+        console.log(activeTab)
         let spentTypes = props.spentTypes != null ? props.spentTypes :this.state.spentTypes
         this.setState({
             activeTab,
@@ -72,6 +74,9 @@ class MonthlyExpensesPage extends React.Component {
     
     onActiveTabClicked =  (activeTab)  => {
         this.setState({activeTab})
+        console.log('onActiveTabClicked')
+        console.log(activeTab)
+
         if (this.props.handleActiveTabChangedCallBack)
         {
             this.props.handleActiveTabChangedCallBack(activeTab)
