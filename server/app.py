@@ -222,10 +222,11 @@ def _get_next_unique_user_id():
 def sign_in():
     user_name = request.args.get('user_name')
     password = request.args.get('password')
-    user_email = request.args.get('user_email')
+    #user_email = request.args.get('user_email')
     user_id = _get_next_unique_user_id()
     
-    db.insert(USERS_TABLE, ['user_name', 'password', 'user_id', 'user_email'], [user_name, password, user_id, user_email])  
+    db.insert(USERS_TABLE, ['user_name', 'password', 'user_id'], [user_name, password, user_id])
+    db.insert(USER_ID_TO_EMAILS, ['user_id', 'email1'], [user_id, 'michalbe8@gmail.com'])
 
     spenTypes = {
     1:'🛒 Supermarket',
