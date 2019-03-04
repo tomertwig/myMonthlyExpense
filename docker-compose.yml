@@ -6,7 +6,7 @@ services:
       - './client:/usr/src/app'
       - './client/usr/src/app/node_modules'
     ports:
-      - '80:80'
+      - '8099:80'
     environment:
       - NODE_ENV=development
   server:
