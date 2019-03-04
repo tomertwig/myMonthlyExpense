@@ -11,7 +11,7 @@ import EditTypePage from './editTypePage';
 var SHA256 = require("crypto-js/sha256");
 const hostName = window.location.hostname
 const serverPort = '5000'
-const clientPort = '3000'
+const clientPort = '80'
 
 export const serverUrl =  'http://' + hostName + ':' + serverPort +'/'
 export const clientUrl = 'http://' + hostName + ':' + clientPort +'/'
